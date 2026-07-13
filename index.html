@@ -1,0 +1,1444 @@
+<!DOCTYPE html>
+<html lang="ru" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GRO Consulting - бухгалтерские и юридические услуги</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        gro: {
+                            blue: '#1b3671',
+                            accent: '#3b82f6',
+                            teal: '#14b8a6', /* Добавлено из калькулятора */
+                            bg: '#03050a', /* Очень глубокий темный, почти черный с синим отливом */
+                            card: '#0a0f1a', /* Чуть светлее для карточек */
+                            border: 'rgba(255, 255, 255, 0.05)'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'neon': '0 0 20px rgba(59, 130, 246, 0.3)',
+                        'neon-hover': '0 0 40px rgba(59, 130, 246, 0.5)',
+                        'card': '0 10px 30px -10px rgba(0, 0, 0, 0.5)',
+                        'progress-glow': '0 0 15px rgba(20, 184, 166, 0.4)' /* Добавлено из калькулятора */
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #03050a;
+            color: #f8fafc;
+            overflow-x: hidden;
+        }
+
+        /* Убираем скроллбар для табов */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* --- Анимации фона (Astarus Style) --- */
+        .bg-tech {
+            position: absolute;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            overflow: hidden;
+            z-index: -2;
+            background-color: #03050a;
+        }
+
+        /* Мягкие светящиеся ленты/потоки */
+        .aurora {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.35;
+            animation: float 20s infinite alternate ease-in-out;
+        }
+        .aurora-1 {
+            width: 800px; height: 800px;
+            background: linear-gradient(135deg, #1b3671, #3b82f6);
+            top: -200px; left: -200px;
+        }
+        .aurora-2 {
+            width: 600px; height: 600px;
+            background: linear-gradient(135deg, #091224, #1b3671);
+            bottom: -100px; right: -100px;
+            animation-delay: -5s;
+        }
+        .aurora-3 {
+            width: 500px; height: 500px;
+            background: rgba(59, 130, 246, 0.2);
+            top: 40%; left: 30%;
+            animation-delay: -10s;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1) rotate(0deg); }
+            33% { transform: translate(50px, -50px) scale(1.1) rotate(10deg); }
+            66% { transform: translate(-30px, 30px) scale(0.9) rotate(-5deg); }
+            100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+        }
+
+        /* Технологичная сетка */
+        .tech-grid {
+            position: absolute;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 60px 60px;
+            z-index: -1;
+            mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 70%);
+            -webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 70%);
+        }
+
+        /* --- Стилизация контента --- */
+        .glass-panel {
+            background: rgba(10, 15, 26, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .gradient-text {
+            background: linear-gradient(to right, #ffffff, #a1a1aa);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        /* Fallback для битых изображений (для лого) */
+        .fallback-element { display: none; }
+        
+        /* Toast уведомление */
+        #toast {
+            visibility: hidden; opacity: 0;
+            transition: visibility 0s 0.3s, opacity 0.3s linear;
+        }
+        #toast.show {
+            visibility: visible; opacity: 1; transition: opacity 0.3s linear;
+        }
+
+        /* Кастомные инпуты для темной темы */
+        .dark-input {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+        .dark-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+            background: rgba(0, 0, 0, 0.5);
+        }
+        .dark-input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* --- СТИЛИ КАЛЬКУЛЯТОРА --- */
+        .step-container {
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+        .step-hidden {
+            opacity: 0;
+            transform: translateY(20px);
+            pointer-events: none;
+            position: absolute;
+            width: 100%;
+        }
+        .step-active {
+            opacity: 1;
+            transform: translateY(0);
+            position: relative;
+            z-index: 10;
+        }
+        .progress-gradient {
+            background: linear-gradient(90deg, #1b3671 0%, #3b82f6 50%, #14b8a6 100%);
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-gro-accent selection:text-white">
+
+    <div class="bg-tech">
+        <div class="aurora aurora-1"></div>
+        <div class="aurora aurora-2"></div>
+        <div class="aurora aurora-3"></div>
+        <div class="tech-grid"></div>
+    </div>
+
+    <!-- ТОСТ-УВЕДОМЛЕНИЕ -->
+    <div id="toast" class="fixed top-24 left-1/2 transform -translate-x-1/2 z-[100] glass-panel text-white px-6 py-3 rounded-full shadow-neon flex items-center gap-3 border-gro-border">
+        <svg class="w-5 h-5 text-gro-accent flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <span id="toast-msg" class="text-sm font-medium"></span>
+    </div>
+
+    <header class="fixed w-full top-0 z-50 glass-panel border-b-0 border-white/5 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                
+                <!-- ЛОГОТИП -->
+                <div class="flex-shrink-0 flex items-center relative h-10 w-48">
+                    <a href="#" class="absolute inset-0 flex items-center">
+                        <!-- ТЗ: Путь assets/logo.png -->
+                        <img src="assets/logo.png" alt="GRO Consulting" 
+                             class="h-8 w-auto brightness-0 invert transition-all duration-300"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                        
+                        <!-- Fallback текстовая заглушка -->
+                        <div class="fallback-element w-full h-full items-center text-xl font-bold tracking-tight text-white">
+                            GRO<span class="text-gro-accent">CONSULTING</span>
+                        </div>
+                    </a>
+                </div>
+                
+                <!-- НАВИГАЦИЯ -->
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#services" class="text-sm font-medium text-gray-400 hover:text-white transition-colors">Услуги</a>
+                    <a href="#tariffs" class="text-sm font-medium text-gray-400 hover:text-white transition-colors">Тарифы</a>
+                    <a href="#payment" class="text-sm font-medium text-gray-400 hover:text-white transition-colors">Оплата</a>
+                </nav>
+
+                <!-- ПРАВЫЙ БЛОК -->
+                <div class="hidden md:flex items-center space-x-6">
+                    <a href="tel:+74955653797" class="text-sm font-semibold text-gray-200 hover:text-white transition-colors">8 (495) 565-37-97</a>
+                    
+                    <div class="flex items-center space-x-4 border-l border-white/10 pl-6">
+                        <button onclick="showToast('китайская версия готовится')" class="text-xs font-bold text-gray-500 hover:text-white transition-colors">RU / 中文</button>
+                    </div>
+
+                    <a href="#payment" class="bg-gro-accent text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-blue-600 transition-all shadow-neon hover:shadow-neon-hover">
+                        Оплатить услугу
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="relative pt-32 pb-20 md:pt-48 md:pb-32 min-h-screen flex items-center z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative w-full">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                
+                <!-- ТЕКСТ (Левая часть) -->
+                <div class="lg:col-span-7 z-10">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-panel text-sm font-medium text-blue-200 mb-8 border-blue-500/30">
+                        <span class="w-2 h-2 rounded-full bg-gro-accent animate-pulse"></span>
+                        21 год опыта на рынке
+                    </div>
+                    
+                    <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] mb-6 tracking-tight gradient-text">
+                        Меньше бумаг - <br>
+                        <span class="text-white">больше бизнеса</span>
+                    </h1>
+                    
+                    <p class="text-lg md:text-xl text-gray-400 mb-10 max-w-2xl font-light leading-relaxed">
+                        Бухгалтерское сопровождение, юридические услуги и электронная отчетность для малого бизнеса. Понятные тарифы и системный подход без лишней бюрократии.
+                    </p>
+                    
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="#tariff-calculator" class="bg-gro-accent text-white px-8 py-4 rounded-xl text-base font-semibold hover:bg-blue-600 transition-all shadow-neon hover:shadow-neon-hover text-center flex items-center justify-center">
+                            Подобрать тариф за 1 минуту
+                        </a>
+                        <a href="#payment" class="glass-panel text-white hover:bg-white/10 px-8 py-4 rounded-xl text-base font-semibold transition-all text-center flex items-center justify-center">
+                            Оплатить услугу
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- ФОТО ОСНОВАТЕЛЯ (Правая часть) -->
+                <div class="lg:col-span-5 relative">
+                    <!-- Декоративная рамка-свечение сзади -->
+                    <div class="absolute -inset-1 bg-gradient-to-br from-gro-accent to-gro-blue rounded-3xl blur-2xl opacity-30 animate-pulse"></div>
+                    
+                    <!-- Премиальная карточка с фото -->
+                    <div class="relative w-full rounded-2xl border border-white/10 glass-panel overflow-hidden shadow-2xl group aspect-[4/5] flex flex-col items-center justify-center text-center bg-gro-card">
+                        
+                        <!-- Само фото основателя -->
+                        <img src="https://i.yapx.cc/d8FDS.jpg" 
+                             alt="Основатель GRO Consulting" 
+                             class="absolute inset-0 w-full h-full object-cover object-[center_18%] z-0 opacity-85 brightness-90 saturate-[0.8] transition-transform duration-700 group-hover:scale-105"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                        
+                        <!-- Заглушка (Fallback), если фото недоступно -->
+                        <div class="hidden absolute inset-0 flex-col items-center justify-center p-8 w-full h-full bg-gro-card z-0" style="display: none;">
+                            <div class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:30px_30px] opacity-20 z-0"></div>
+                            
+                            <div class="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center mb-6 border border-white/10 z-10 shadow-neon backdrop-blur-sm transition-transform duration-500 group-hover:scale-110">
+                                <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                            </div>
+                            
+                            <span class="text-white font-medium text-xl z-10 tracking-wide mb-2">Основатель</span>
+                            <span class="text-xs text-gro-accent z-10 uppercase tracking-widest font-semibold">здесь будет фотография директора</span>
+                        </div>
+                        
+                        <!-- Темный градиент снизу для плавного перехода и скрытия лишнего -->
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#03050a] via-[#03050a]/60 to-transparent opacity-95 z-10 pointer-events-none"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="advantages" class="py-24 relative z-10 border-y border-white/5 bg-[#03050a]/80 backdrop-blur-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <div class="max-w-3xl mb-16 relative">
+                <div class="absolute -left-4 top-2 bottom-0 w-1 bg-gradient-to-b from-gro-accent to-transparent rounded-full opacity-50 hidden md:block"></div>
+                
+                <h2 class="text-3xl md:text-5xl font-bold mb-6 tracking-tight text-white">Почему у нас разумная стоимость?</h2>
+                <p class="text-gray-400 text-lg leading-relaxed">
+                    мы не продаем <span class="text-gray-200 font-medium">«дешево»</span>. Мы просто оцифровали рутину и убрали всё лишнее, за что обычно переплачивает малый бизнес. Вы платите только за системность и результат.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Node 1 -->
+                <div class="glass-panel rounded-2xl p-8 hover:bg-white/5 transition-all group relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-gro-accent/10 rounded-full blur-2xl group-hover:bg-gro-accent/20 transition-all"></div>
+                    <div class="w-12 h-12 rounded-xl border border-gro-accent/30 bg-gro-accent/10 flex items-center justify-center mb-6 text-gro-accent">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3 text-white">Отсекаем лишнее</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        Не навязываем ненужные процессы. Делаем только то, что действительно требует закон для вашей спокойной работы.
+                    </p>
+                </div>
+
+                <!-- Node 2 -->
+                <div class="glass-panel rounded-2xl p-8 hover:bg-white/5 transition-all group relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-gro-accent/10 rounded-full blur-2xl group-hover:bg-gro-accent/20 transition-all"></div>
+                    <div class="w-12 h-12 rounded-xl border border-gro-accent/30 bg-gro-accent/10 flex items-center justify-center mb-6 text-gro-accent">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3 text-white">Цифровой формат</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        Максимально отказываемся от бумаги. ЭДО ускоряет работу и радикально снижает ваши операционные издержки.
+                    </p>
+                </div>
+
+                <!-- Node 3 -->
+                <div class="glass-panel rounded-2xl p-8 hover:bg-white/5 transition-all group relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-gro-accent/10 rounded-full blur-2xl group-hover:bg-gro-accent/20 transition-all"></div>
+                    <div class="w-12 h-12 rounded-xl border border-gro-accent/30 bg-gro-accent/10 flex items-center justify-center mb-6 text-gro-accent">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3 text-white">Фокус на микробизнесе</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        Наши процессы заточены под ИП и небольшие ООО. Мы работаем быстро, четко и без корпоративной бюрократии.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="approach-video" class="py-24 relative z-10 border-b border-white/5 bg-[#03050a]/60">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12 max-w-3xl mx-auto">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4 tracking-tight text-white">Коротко о подходе GRO Consulting</h2>
+                <p class="text-gray-400 text-lg leading-relaxed">
+                    В коротком видео основатель рассказывает, как мы работаем с малым бизнесом: без лишней бюрократии, с понятными тарифами и фокусом на результате.
+                </p>
+            </div>
+            
+            <div class="max-w-4xl mx-auto relative group">
+                <!-- Декоративное свечение -->
+                <div class="absolute -inset-1 bg-gradient-to-r from-gro-accent/40 to-gro-blue/40 rounded-3xl blur-xl opacity-30 group-hover:opacity-50 transition duration-500 pointer-events-none"></div>
+                
+                <!-- Контейнер видео -->
+                <div class="glass-panel rounded-2xl p-2 sm:p-4 relative border border-white/10 shadow-2xl overflow-hidden bg-[#0a0f1a]/80">
+                    <div style="position: relative; padding-top: 56.72%; width: 100%; border-radius: 0.5rem; overflow: hidden; background-color: #000;">
+                        <iframe
+                            src="https://kinescope.io/embed/75ziaHSdFe34gwAMMUHBRA"
+                            allow="autoplay; fullscreen; picture-in-picture; encrypted-media; gyroscope; accelerometer; clipboard-write; screen-wake-lock;"
+                            frameborder="0"
+                            allowfullscreen
+                            style="position: absolute; width: 100%; height: 100%; top: 0; left: 0;">
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- КАЛЬКУЛЯТОР НАЧАЛО -->
+    <section id="tariff-calculator" class="py-24 relative z-10 border-b border-white/5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <div class="mb-10 max-w-3xl">
+                <h2 class="text-3xl md:text-4xl font-bold tracking-tight text-white mb-4">Подбор тарифа</h2>
+                <p class="text-gray-400 text-lg leading-relaxed mb-3">
+                    Ответьте на несколько коротких вопросов - покажем ориентир стоимости и подходящий формат обслуживания.
+                </p>
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-medium text-gro-teal">
+                    <span class="w-1.5 h-1.5 rounded-full bg-gro-teal animate-pulse"></span>
+                    7 вопросов · 1-2 минуты · без обязательств
+                </div>
+            </div>
+
+            <div class="flex flex-col lg:flex-row gap-8 items-start">
+                
+                <!-- ЛЕВАЯ ЧАСТЬ КАЛЬКУЛЯТОРА -->
+                <div class="w-full lg:w-2/3 glass-panel rounded-2xl border border-white/10 p-6 md:p-10 shadow-2xl relative overflow-hidden bg-[#0a0f1a]/80">
+                    
+                    <!-- Прогресс бар -->
+                    <div class="mb-8" id="tariff-progress-container">
+                        <div class="flex justify-between text-xs text-gray-500 font-medium mb-3">
+                            <span id="tariff-progress-text">Вопрос 1 из 7</span>
+                            <span id="tariff-progress-percent" class="text-gro-teal font-semibold">14%</span>
+                        </div>
+                        <div class="h-1.5 w-full bg-white/5 rounded-full overflow-hidden relative">
+                            <div id="tariff-progress-bar" class="h-full progress-gradient transition-all duration-700 ease-out w-[14%] rounded-full shadow-progress-glow"></div>
+                        </div>
+                    </div>
+
+                    <!-- Контейнер шагов -->
+                    <div id="tariff-quiz-container" class="relative min-h-[350px]">
+                        <!-- Шаги генерируются через JS -->
+                    </div>
+
+                    <!-- Кнопки навигации -->
+                    <div class="mt-10 flex justify-between items-center border-t border-white/10 pt-6" id="tariff-nav-container">
+                        <button id="tariff-btn-prev" class="px-6 py-3 rounded-xl text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all opacity-0 pointer-events-none">
+                            Назад
+                        </button>
+                        <button id="tariff-btn-next" class="bg-gro-accent text-white px-8 py-3 rounded-xl text-sm font-semibold hover:bg-blue-600 transition-all shadow-neon hover:shadow-neon-hover flex items-center gap-2">
+                            Далее
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ПРАВАЯ ЧАСТЬ (Live панель) -->
+                <div class="w-full lg:w-1/3 lg:sticky lg:top-24 order-first lg:order-last transition-all duration-500" id="tariff-live-panel">
+                    <div class="glass-panel rounded-2xl border border-gro-accent/20 p-6 md:p-8 shadow-neon relative overflow-hidden bg-gradient-to-b from-[#0a0f1a] to-[#03050a]">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-gro-accent/10 rounded-full blur-3xl pointer-events-none"></div>
+                        
+                        <h3 class="text-sm uppercase tracking-widest text-gray-400 font-semibold mb-6 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-gro-accent animate-pulse"></span>
+                            Предварительная оценка
+                        </h3>
+                        
+                        <div class="mb-6">
+                            <div class="text-xs text-gray-500 mb-1">Ориентир стоимости</div>
+                            <div id="tariff-live-price" class="text-2xl md:text-3xl font-bold text-gray-500 tracking-tight transition-all duration-300 min-h-[40px]">
+                                Ответьте на первые вопросы
+                            </div>
+                        </div>
+
+                        <div class="mb-6 border-t border-white/10 pt-6">
+                            <div class="text-xs text-gray-500 mb-1">Тарифный коридор</div>
+                            <div id="tariff-live-corridor" class="text-lg font-medium text-gro-accent transition-all duration-300">
+                                Уточняем...
+                            </div>
+                        </div>
+                        
+                        <div class="text-xs text-gray-500 leading-relaxed bg-white/5 p-4 rounded-xl border border-white/5">
+                            Ориентир не является офертой. Точная стоимость фиксируется после короткого разбора.
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+    <!-- КАЛЬКУЛЯТОР КОНЕЦ -->
+
+    <section id="tariffs" class="py-24 relative z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8">
+                <div>
+                    <h2 class="text-3xl md:text-5xl font-bold tracking-tight mb-4 text-white">Понятные тарифы</h2>
+                    <p class="text-gray-400 text-lg max-w-xl">Открытая стоимость без скрытых платежей. Выбирайте то, что подходит именно вам.</p>
+                </div>
+                
+                <!-- Табы (Glassmorphic) -->
+                <div class="inline-flex p-1 glass-panel rounded-xl">
+                    <button onclick="switchTab('ip')" id="tab-ip" class="tab-btn active relative px-8 py-3 text-sm font-semibold rounded-lg text-white bg-white/10 shadow border border-white/5 transition-all">ИП</button>
+                    <button onclick="switchTab('ooo-usn')" id="tab-ooo-usn" class="tab-btn relative px-8 py-3 text-sm font-medium rounded-lg text-gray-400 hover:text-white transition-all">ООО на УСН</button>
+                    <button onclick="switchTab('ooo-osno')" id="tab-ooo-osno" class="tab-btn relative px-8 py-3 text-sm font-medium rounded-lg text-gray-400 hover:text-white transition-all">ООО на ОСНО</button>
+                </div>
+            </div>
+
+            <!-- Контейнер карточек -->
+            <div id="tariffs-container" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Заполняется JS -->
+            </div>
+            
+        </div>
+    </section>
+
+    <section id="services" class="py-24 relative z-10 border-t border-white/5 bg-[#03050a]/40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
+                
+                <!-- Юридические услуги -->
+                <div>
+                    <div class="flex items-center gap-4 mb-8">
+                        <div class="w-10 h-10 rounded-lg bg-gro-accent/10 border border-gro-accent/30 flex items-center justify-center text-gro-accent">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"></path></svg>
+                        </div>
+                        <h2 class="text-3xl font-bold text-white">Юридические услуги</h2>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div class="glass-panel p-5 rounded-xl flex items-center justify-between group hover:bg-white/5 transition-all cursor-pointer" onclick="showToast('Заявка: Регистрация ИП')">
+                            <div>
+                                <h4 class="text-white font-medium text-lg">Регистрация ИП</h4>
+                                <p class="text-sm text-gray-500 mt-1">подготовка документов и подача в ФНС</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="block text-gro-accent font-bold">от 3 000 ₽</span>
+                            </div>
+                        </div>
+                        
+                        <div class="glass-panel p-5 rounded-xl flex items-center justify-between group hover:bg-white/5 transition-all cursor-pointer" onclick="showToast('Заявка: Регистрация ООО')">
+                            <div>
+                                <h4 class="text-white font-medium text-lg">Регистрация ООО</h4>
+                                <p class="text-sm text-gray-500 mt-1">устав, решения, подбор ОКВЭД</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="block text-gro-accent font-bold">от 6 000 ₽</span>
+                            </div>
+                        </div>
+
+                        <div class="glass-panel p-5 rounded-xl flex items-center justify-between group hover:bg-white/5 transition-all cursor-pointer" onclick="showToast('Заявка: Внесение изменений')">
+                            <div>
+                                <h4 class="text-white font-medium text-lg">Внесение изменений</h4>
+                                <p class="text-sm text-gray-500 mt-1">смена директора, адреса, ОКВЭД</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="block text-gray-400 font-medium">по запросу</span>
+                            </div>
+                        </div>
+
+                        <div class="glass-panel border-gro-accent/30 p-5 rounded-xl flex items-center justify-between group hover:bg-gro-accent/10 transition-all cursor-pointer" onclick="showToast('Заявка: Открытие счета')">
+                            <div>
+                                <h4 class="text-white font-medium text-lg">Открытие расчетного счета</h4>
+                                <p class="text-sm text-gray-500 mt-1">помощь в выборе банка-партнера</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="block text-green-400 font-bold tracking-wide">Бесплатно</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Электронная отчетность -->
+                <div>
+                    <div class="flex items-center gap-4 mb-8">
+                        <div class="w-10 h-10 rounded-lg bg-gro-accent/10 border border-gro-accent/30 flex items-center justify-center text-gro-accent">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        </div>
+                        <h2 class="text-3xl font-bold text-white">Электронная отчетность</h2>
+                    </div>
+                    
+                    <p class="text-gray-400 leading-relaxed mb-8">
+                        Мы являемся официальными дилерами ведущих систем документооборота. Поможем выпустить ЭЦП, подключить электронную сдачу отчетности и наладить цифровой обмен с контрагентами.
+                    </p>
+                    
+                    <div class="grid grid-cols-2 gap-4 mb-8">
+                        <div class="glass-panel p-8 rounded-xl flex flex-col items-center justify-center border-white/5 hover:border-white/20 transition-all">
+                            <!-- Имитация логотипа Контур (заглушка) -->
+                            <div class="text-2xl font-black tracking-widest text-white/80 mb-2">КОНТУР</div>
+                            <span class="text-xs text-gray-500 uppercase tracking-wider">Официальный дилер</span>
+                        </div>
+                        <div class="glass-panel p-8 rounded-xl flex flex-col items-center justify-center border-white/5 hover:border-white/20 transition-all">
+                            <!-- Имитация логотипа Такском (заглушка) -->
+                            <div class="text-2xl font-black tracking-widest text-white/80 mb-2">ТАКСКОМ</div>
+                            <span class="text-xs text-gray-500 uppercase tracking-wider">Официальный дилер</span>
+                        </div>
+                    </div>
+                    
+                    <button onclick="showToast('Заявка на подключение ЭДО')" class="w-full glass-panel border border-gro-accent text-white px-6 py-4 rounded-xl text-sm font-bold hover:bg-gro-accent/20 transition-all shadow-neon">
+                        Оставить заявку на подключение
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="partners" class="py-24 relative z-10 border-t border-white/5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Нам доверяют</h2>
+                <p class="text-gray-400">ведущие банки и сотни предпринимателей по всей России</p>
+            </div>
+            
+            <!-- Сетка логотипов (текстовые заглушки в едином премиальном стиле) -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 opacity-70 hover:opacity-100 transition-opacity duration-500">
+                <div class="glass-panel h-20 rounded-xl flex items-center justify-center text-lg font-bold text-gray-300 tracking-wider">СБЕР</div>
+                <div class="glass-panel h-20 rounded-xl flex items-center justify-center text-lg font-bold text-gray-300 tracking-wider">ВТБ</div>
+                <div class="glass-panel h-20 rounded-xl flex items-center justify-center text-lg font-bold text-gray-300 tracking-wider">АЛЬФА-БАНК</div>
+                <div class="glass-panel h-20 rounded-xl flex items-center justify-center text-lg font-bold text-gray-300 tracking-wider">ТИНЬКОФФ</div>
+                
+                <div class="glass-panel h-20 rounded-xl flex items-center justify-center text-sm font-semibold text-gray-400 tracking-widest">OTOPLENIE.RU</div>
+                <div class="glass-panel h-20 rounded-xl flex items-center justify-center text-sm font-semibold text-gray-400 tracking-widest">BASH TODAY</div>
+                <div class="glass-panel h-20 rounded-xl flex items-center justify-center text-sm font-semibold text-gray-400 tracking-widest">ТРАЕКТОРИЯ</div>
+                <div class="glass-panel h-20 rounded-xl flex items-center justify-center text-sm font-semibold text-gray-400 tracking-widest">КРАНСНАБ</div>
+            </div>
+        </div>
+    </section>
+
+    <section id="payment" class="py-24 relative z-10 border-t border-white/5 bg-gradient-to-b from-transparent to-[#0a0f1a]/50">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <div class="glass-panel rounded-3xl p-8 md:p-12 relative overflow-hidden border-white/10 shadow-2xl">
+                <!-- Декоративное свечение -->
+                <div class="absolute top-0 right-0 w-64 h-64 bg-gro-accent/10 rounded-full blur-3xl pointer-events-none"></div>
+                
+                <div class="text-center mb-10 relative z-10">
+                    <div class="w-16 h-16 mx-auto bg-gro-accent/10 border border-gro-accent/30 rounded-2xl flex items-center justify-center mb-6 text-gro-accent shadow-neon">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                    </div>
+                    <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Оплата услуг онлайн</h2>
+                    <p class="text-gray-400 max-w-xl mx-auto">Безопасный шлюз для быстрой оплаты бухгалтерских и юридических услуг. Данные защищены по стандарту PCI DSS.</p>
+                </div>
+
+                <form onsubmit="handleFormSubmit(event, 'Оплата инициирована')" class="space-y-6 relative z-10">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-gray-300">сумма платежа (₽) *</label>
+                            <input type="number" required min="1" placeholder="0.00" class="w-full dark-input rounded-xl px-5 py-4 font-mono text-lg">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-gray-300">телефон *</label>
+                            <input type="tel" required placeholder="+7 (___) ___-__-__" class="w-full dark-input rounded-xl px-5 py-4 text-base">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium mb-2 text-gray-300">назначение платежа *</label>
+                        <input type="text" required placeholder="Введите номер счёта и наименование услуги" class="w-full dark-input rounded-xl px-5 py-4 text-base">
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-gray-300">имя или название компании *</label>
+                            <input type="text" required placeholder="ООО «Компания» или Иванов И.И." class="w-full dark-input rounded-xl px-5 py-4 text-base">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-gray-300">e-mail (для чека)</label>
+                            <input type="email" placeholder="mail@example.com" class="w-full dark-input rounded-xl px-5 py-4 text-base">
+                        </div>
+                    </div>
+
+                    <div class="pt-6">
+                        <button type="submit" class="w-full bg-gro-accent text-white px-8 py-5 rounded-xl text-lg font-bold hover:bg-blue-600 transition-all shadow-neon hover:shadow-neon-hover flex justify-center items-center gap-3">
+                            Перейти к безопасной оплате
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-20 relative z-10 border-y border-white/5 bg-[#1b3671]/20">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-2xl md:text-3xl font-bold text-white mb-4">Бесплатный чек-лист налогов для малого бизнеса</h2>
+            <p class="text-gray-300 mb-8">Актуальный календарь оплат и отчетности, чтобы не получить штраф от ФНС. Оставьте контакт, и мы вышлем его автоматически.</p>
+            
+            <form onsubmit="handleFormSubmit(event, 'Чек-лист отправлен')" class="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto">
+                <input type="email" required placeholder="ваш e-mail или телефон" class="flex-1 dark-input rounded-xl px-5 py-4 text-base">
+                <button type="submit" class="bg-white text-[#03050a] px-8 py-4 rounded-xl font-bold hover:bg-gray-200 transition-all">
+                    Получить
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <section id="faq" class="py-24 relative z-10">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <!-- Клуб Новое Время -->
+            <div class="glass-panel border-white/10 rounded-2xl p-8 mb-24 text-center">
+                <span class="text-xs text-gro-accent uppercase tracking-widest font-bold mb-2 block">Основатель состоит в бизнес-клубе</span>
+                <h3 class="text-2xl font-bold text-white mb-4">«Новое время»</h3>
+                <p class="text-gray-400 text-sm max-w-2xl mx-auto">
+                    Постоянный обмен опытом с лидерами рынка, актуальная информация о бизнес-среде и поддержка высокого стандарта ведения консалтинговых услуг.
+                </p>
+            </div>
+
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Частые вопросы</h2>
+            </div>
+
+            <!-- Аккордеон FAQ -->
+            <div class="space-y-4">
+                <!-- Вопрос 1 -->
+                <div class="glass-panel border-white/5 rounded-xl overflow-hidden">
+                    <button onclick="toggleFaq(1)" class="w-full px-6 py-5 text-left flex justify-between items-center text-white hover:bg-white/5 transition-colors">
+                        <span class="font-medium">почему у вас доступная стоимость?</span>
+                        <svg id="icon-faq-1" class="w-5 h-5 text-gro-accent transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div id="content-faq-1" class="hidden px-6 pb-5 text-gray-400 text-sm leading-relaxed border-t border-white/5 pt-4">
+                        Мы оцифровали большинство рутинных процессов и убрали бюрократию. Вы платите только за реальные действия бухгалтера и юриста, которые требуются по закону, а не за поддержание раздутого штата.
+                    </div>
+                </div>
+
+                <!-- Вопрос 2 -->
+                <div class="glass-panel border-white/5 rounded-xl overflow-hidden">
+                    <button onclick="toggleFaq(2)" class="w-full px-6 py-5 text-left flex justify-between items-center text-white hover:bg-white/5 transition-colors">
+                        <span class="font-medium">как передавать документы?</span>
+                        <svg id="icon-faq-2" class="w-5 h-5 text-gro-accent transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div id="content-faq-2" class="hidden px-6 pb-5 text-gray-400 text-sm leading-relaxed border-t border-white/5 pt-4">
+                        Максимально в цифровом виде. Через системы ЭДО (Контур, Такском), в виде качественных сканов по e-mail или фотографий в защищенный мессенджер. Оригиналы на бумаге требуются только в исключительных случаях по запросу ФНС.
+                    </div>
+                </div>
+
+                <!-- Вопрос 3 -->
+                <div class="glass-panel border-white/5 rounded-xl overflow-hidden">
+                    <button onclick="toggleFaq(3)" class="w-full px-6 py-5 text-left flex justify-between items-center text-white hover:bg-white/5 transition-colors">
+                        <span class="font-medium">кто отвечает за ошибки?</span>
+                        <svg id="icon-faq-3" class="w-5 h-5 text-gro-accent transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div id="content-faq-3" class="hidden px-6 pb-5 text-gray-400 text-sm leading-relaxed border-t border-white/5 pt-4">
+                        Наша ответственность официально закреплена в договоре на обслуживание. Если налоговая начисляет штраф или пени по причине нашей ошибки — мы полностью компенсируем эти расходы.
+                    </div>
+                </div>
+
+                <!-- Вопрос 4 -->
+                <div class="glass-panel border-white/5 rounded-xl overflow-hidden">
+                    <button onclick="toggleFaq(4)" class="w-full px-6 py-5 text-left flex justify-between items-center text-white hover:bg-white/5 transition-colors">
+                        <span class="font-medium">можно ли перейти от другого бухгалтера в середине года?</span>
+                        <svg id="icon-faq-4" class="w-5 h-5 text-gro-accent transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div id="content-faq-4" class="hidden px-6 pb-5 text-gray-400 text-sm leading-relaxed border-t border-white/5 pt-4">
+                        Да, переход возможен в любой момент. Мы бесплатно проведем экспресс-анализ вашей текущей базы 1С, выявим возможные недочеты и плавно переведем учет под наш контроль без остановки работы бизнеса.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-[#020306] border-t border-white/5 pt-16 pb-8 relative z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+                
+                <div class="col-span-1 md:col-span-2">
+                    <div class="flex items-center relative h-8 w-40 mb-6">
+                        <img src="assets/logo.png" alt="GRO Consulting" class="h-6 w-auto brightness-0 invert" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
+                        <div class="fallback-element text-lg font-bold tracking-tight text-white">GRO<span class="text-gro-accent">CONSULTING</span></div>
+                    </div>
+                    <p class="text-gray-500 text-sm max-w-sm leading-relaxed">
+                        Меньше бумаг - больше бизнеса. Бухгалтерское и юридическое сопровождение малого бизнеса с 2004 года.
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="text-white font-semibold mb-6">Контакты</h4>
+                    <ul class="space-y-4 text-sm text-gray-400">
+                        <li><a href="tel:+74955653797" class="hover:text-white transition-colors">8 (495) 565-37-97</a></li>
+                        <li><a href="mailto:info@gro-consult.ru" class="hover:text-white transition-colors">info@gro-consult.ru</a></li>
+                        <li class="pt-2 flex gap-4">
+                            <a href="#" class="text-gro-accent hover:text-white transition-colors">Telegram</a>
+                            <a href="#" class="text-green-500 hover:text-white transition-colors">WhatsApp</a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-white font-semibold mb-6">Реквизиты</h4>
+                    <ul class="space-y-3 text-xs text-gray-500">
+                        <li>ООО "Бухгалтерские решения"</li>
+                        <li>ИНН: 7718734515</li>
+                        <li>ОГРН: 5087746530636</li>
+                    </ul>
+                </div>
+
+            </div>
+            
+            <div class="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-600">
+                <p>&copy; 2026 GRO Consulting. Все права защищены.</p>
+                <div class="flex space-x-6">
+                    <a href="#" class="hover:text-gray-300 transition-colors">Политика конфиденциальности</a>
+                    <a href="#" class="hover:text-gray-300 transition-colors">Согласие на обработку ПД</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Утилита для тостов (замена alert)
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = message;
+            toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); }, 3000);
+        }
+
+        // Универсальный обработчик форм (имитация отправки)
+        function handleFormSubmit(event, successMessage) {
+            event.preventDefault();
+            const form = event.target;
+            const btn = form.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            
+            // Состояние загрузки
+            btn.innerHTML = `<svg class="animate-spin h-5 w-5 mx-auto text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
+            btn.disabled = true;
+
+            // Имитация задержки сети
+            setTimeout(() => {
+                showToast(successMessage);
+                form.reset();
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }, 1500);
+        }
+
+        // Логика аккордеона FAQ
+        function toggleFaq(id) {
+            const content = document.getElementById('content-faq-' + id);
+            const icon = document.getElementById('icon-faq-' + id);
+            
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                icon.classList.add('rotate-180');
+            } else {
+                content.classList.add('hidden');
+                icon.classList.remove('rotate-180');
+            }
+        }
+
+        // --- ДАННЫЕ ТАРИФОВ (СТАНДАРТНЫЙ БЛОК) ---
+        const tariffsData = {
+            'ip': [
+                { name: 'Минимум', price: '2 500 ₽', period: 'в год', desc: 'непостоянная деятельность', features: ['Без сотрудников', 'До 10 операций в квартал', 'Сдача нулевой отчетности', 'Консультации по запросу'] },
+                { name: 'Базовый', price: '6 000 ₽', period: 'в квартал', desc: 'регулярная деятельность', popular: true, features: ['До 5 сотрудников', 'До 30 операций', 'Ведение книги учета (КУДиР)', 'Расчет налогов и взносов'] },
+                { name: 'Максимум', price: '10 500 ₽', period: 'в квартал', desc: 'активная деятельность', features: ['Более 5 сотрудников', 'Безлимит операций', 'Сложные виды деятельности', 'Полный кадровый учет'] }
+            ],
+            'ooo-usn': [
+                { name: 'Минимум', price: '2 500 ₽', period: 'в год', desc: 'без реальной деятельности', features: ['Нулевая отчетность', 'Сдача в фонды', 'Письма из ФНС', 'Без расчетного счета'] },
+                { name: 'Базовый', price: 'от 6 000 ₽', period: 'в квартал', desc: 'до 30 продаж, УСН 6%', popular: true, features: ['Ведение базы 1С', 'Отчетность в налоговую', 'Расчет зарплаты директору', 'Сверка с бюджетом'] },
+                { name: 'Максимум', price: 'от 10 500 ₽', period: 'в квартал', desc: 'сотрудники в штате, УСН 15%', features: ['УСН 15% (доходы-расходы)', 'Сложный учет расходов', 'Кадровый учет', 'Анализ договоров'] }
+            ],
+            'ooo-osno': [
+                { name: 'Минимум', price: 'по запросу', period: '', desc: 'нулевой отчет (НДС)', features: ['Сдача НДС', 'Сдача налога на прибыль', 'Ответы на требования', 'Поддержание статуса'] },
+                { name: 'Базовый', price: 'от 15 000 ₽', period: 'в квартал', desc: 'стандартный объем, НДС', features: ['Полноценный учет НДС', 'Книга покупок и продаж', 'Авансовые отчеты', 'Работа с контрагентами'] },
+                { name: 'Максимум', price: 'индивидуально', period: '', desc: 'ВЭД, подразделения', features: ['Валютный контроль', 'Обособленные подразделения', 'Сложное производство', 'Налоговое планирование'] }
+            ]
+        };
+
+        // Логика переключения табов
+        function switchTab(tabId) {
+            // Визуальное обновление табов
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = "tab-btn relative px-8 py-3 text-sm font-medium rounded-lg text-gray-400 hover:text-white transition-all";
+            });
+            const activeBtn = document.getElementById('tab-' + tabId);
+            activeBtn.className = "tab-btn active relative px-8 py-3 text-sm font-semibold rounded-lg text-white bg-white/10 shadow border border-white/5 transition-all";
+
+            // Рендер карточек
+            const container = document.getElementById('tariffs-container');
+            container.innerHTML = '';
+            
+            tariffsData[tabId].forEach(t => {
+                const isPopular = t.popular;
+                
+                // Стили для карточки ХИТ
+                const cardClass = isPopular 
+                    ? 'glass-panel border-gro-accent/50 shadow-neon transform md:-translate-y-2 relative' 
+                    : 'glass-panel border-white/5 hover:border-white/20 hover:bg-white/5 relative';
+                
+                const badge = isPopular 
+                    ? `<div class="absolute top-0 right-0 bg-gro-accent text-white text-[10px] font-bold px-4 py-1.5 rounded-bl-xl rounded-tr-xl uppercase tracking-widest shadow-neon">хит</div>` 
+                    : '';
+                
+                const btnClass = isPopular
+                    ? 'bg-gro-accent text-white border-gro-accent hover:bg-blue-600'
+                    : 'bg-transparent text-white border-white/20 hover:bg-white/10';
+
+                // Генерация списка возможностей
+                const featuresHtml = t.features.map(f => `
+                    <li class="flex items-start text-sm text-gray-400">
+                        <svg class="w-5 h-5 text-gro-accent mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        <span>${f}</span>
+                    </li>
+                `).join('');
+
+                container.innerHTML += `
+                    <div class="rounded-2xl p-8 flex flex-col transition-all duration-300 ${cardClass}">
+                        ${badge}
+                        
+                        <!-- Декоративная линия сверху -->
+                        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r ${isPopular ? 'from-gro-accent to-blue-400' : 'from-transparent to-transparent'}"></div>
+
+                        <div class="mb-6">
+                            <h3 class="text-2xl font-bold mb-1 text-white">${t.name}</h3>
+                            <p class="text-sm text-gro-accent font-medium">${t.desc}</p>
+                        </div>
+                        
+                        <div class="mb-8 pb-8 border-b border-white/10">
+                            <div class="flex items-baseline">
+                                <span class="text-4xl font-bold text-white tracking-tight">${t.price}</span>
+                                ${t.period ? `<span class="text-sm text-gray-500 ml-2">${t.period}</span>` : ''}
+                            </div>
+                        </div>
+
+                        <ul class="space-y-4 mb-8 flex-grow">
+                            ${featuresHtml}
+                        </ul>
+
+                        <button onclick="showToast('Заявка на тариф: ${t.name}')" class="w-full border px-6 py-4 rounded-xl text-sm font-bold transition-all ${btnClass}">
+                            Оставить заявку
+                        </button>
+                    </div>
+                `;
+            });
+        }
+        
+        // Инициализация стандартных табов при загрузке
+        switchTab('ip');
+
+        // --- ЛОГИКА КАЛЬКУЛЯТОРА ---
+        const CORRIDORS = {
+            MINIMAL: { id: 1, name: "Минимальный", price: "~ 2 500 ₽ / квартал" },
+            SPEC_LIGHT: { id: 2, name: "Специальный легкий", price: "~ 4 000 ₽ / квартал" }, 
+            ZERO_OSNO: { id: 3, name: "Нулевая ОСНО", price: "~ 8 000 ₽ / квартал" },
+            LIGHT_USN: { id: 4, name: "Легкий УСН", price: "8 000 - 11 000 ₽ / квартал" },
+            BASE: { id: 5, name: "Базовый", price: "~ 25 000 ₽ / квартал" },
+            STANDARD_PLUS: { id: 6, name: "Стандарт+", price: "~ 40 000 ₽ / квартал" },
+            OSNO_LIGHT: { id: 7, name: "ОСНО-лайт", price: "от 45 000 ₽ / квартал" },
+            PRO: { id: 8, name: "Продвинутый", price: "60 000 - 70 000 ₽ / квартал" },
+            PREMIUM: { id: 9, name: "Премиальный", price: "80 000 - 90 000 ₽ / квартал" },
+            FULL: { id: 10, name: "Полный контур", price: "от 120 000 ₽ / квартал" },
+            INDIVIDUAL: { id: 11, name: "Индивидуальный расчет", price: "Потребуется детальный аудит" },
+            STARTUP: { id: 12, name: "Регистрация и старт", price: "от 3 000 ₽ за регистрацию + подбор тарифа" }
+        };
+
+        const QUESTIONS = [
+            {
+                id: 'business_type',
+                title: 'Кто вы?',
+                type: 'radio',
+                options: [
+                    { id: 'ip', label: 'ИП' },
+                    { id: 'ooo', label: 'ООО', points: 1 },
+                    { id: 'nko', label: 'НКО' },
+                    { id: 'plan', label: 'Только планирую открыть бизнес' }
+                ]
+            },
+            {
+                id: 'activity',
+                title: 'Какая у вас активность?',
+                type: 'radio',
+                options: [
+                    { id: 'zero', label: 'Нулевая отчетность / деятельности нет', points: 0 },
+                    { id: 'slow', label: 'Вялотекущая деятельность, операции бывают редко', points: 1 },
+                    { id: 'small', label: 'Небольшая регулярная деятельность', points: 2 },
+                    { id: 'active', label: 'Активная регулярная деятельность', points: 4 },
+                    { id: 'fluctuating', label: 'Нагрузка сильно меняется от квартала к кварталу', points: 3, flags: ['is_floating'] }
+                ]
+            },
+            {
+                id: 'tax_system',
+                title: 'Какая у вас система налогообложения?',
+                type: 'checkbox',
+                options: [
+                    { id: 'ausn_d', label: 'АУСН доходы', points: 0 },
+                    { id: 'ausn_dr', label: 'АУСН доходы минус расходы', points: 0 },
+                    { id: 'usn_6', label: 'УСН 6%', points: 1 },
+                    { id: 'usn_15', label: 'УСН 15%', points: 2 },
+                    { id: 'patent', label: 'Патент', points: 0 },
+                    { id: 'osno', label: 'ОСНО', points: 4 },
+                    { id: 'unknown', label: 'Не знаю', points: 1, flags: ['tax_unknown'] }
+                ]
+            },
+            {
+                id: 'vat',
+                title: 'Работаете ли вы с НДС?',
+                type: 'radio',
+                options: [
+                    { id: 'no', label: 'Нет', points: 0 },
+                    { id: 'yes_usn', label: 'Да, НДС на УСН', points: 3 },
+                    { id: 'yes_osno', label: 'Да, НДС на ОСНО', points: 4 },
+                    { id: 'unknown', label: 'Не знаю', points: 1, flags: ['vat_unknown'] }
+                ]
+            },
+            {
+                id: 'employees',
+                title: 'Есть ли сотрудники?',
+                type: 'radio',
+                options: [
+                    { id: 'e_0', label: 'Нет', points: 0 },
+                    { id: 'e_1_2', label: '1-2 человека', points: 2 },
+                    { id: 'e_3_5', label: '3-5 человек', points: 3 },
+                    { id: 'e_6_10', label: '6-10 человек', points: 5 },
+                    { id: 'e_10_plus', label: 'Больше 10', points: 7 }
+                ]
+            },
+            {
+                id: 'primary_docs',
+                title: 'Что нужно по первичке и платежам?',
+                type: 'radio',
+                options: [
+                    { id: 'self', label: 'Первичку и платежи ведем сами, нужна отчетность и налоги', points: 0 },
+                    { id: 'rare', label: 'Иногда нужна разовая помощь с документом', points: 1 },
+                    { id: 'regular', label: 'Нужна регулярная подготовка первичных документов', points: 3 },
+                    { id: 'pay', label: 'Нужно управление платежами в банке', points: 5 },
+                    { id: 'full', label: 'Нужен полный контур: первичка, платежи, коммуникация', points: 8 }
+                ]
+            },
+            {
+                id: 'extra_factors',
+                title: 'Есть ли дополнительные факторы?',
+                type: 'checkbox',
+                options: [
+                    { id: 'cash', label: 'Касса', pts_ip: 0.5, pts_ooo: 1 },
+                    { id: 'mp', label: 'Маркетплейсы', pts_ip: 2, pts_ooo: 3 },
+                    { id: 'ved', label: 'ВЭД', pts_ip: 0, pts_ooo: 0, flags: ['has_ved'] },
+                    { id: 'lease', label: 'Лизинг / кредиты', pts_ip: 1, pts_ooo: 2 },
+                    { id: 'high_sales', label: 'Более 15 продаж или поступлений в месяц', pts_ip: 2, pts_ooo: 3 },
+                    { id: 'none', label: 'Ничего из перечисленного', pts_ip: 0, pts_ooo: 0 }
+                ]
+            }
+        ];
+
+        let tariffCalcCurrentStep = 0;
+        let tariffCalcAnswers = {};
+        const tariffCalcTotalSteps = QUESTIONS.length;
+
+        function tariffCalcCalculateResult() {
+            let totalPoints = 0;
+            let flags = new Set();
+            let appliedFactors = [];
+
+            const formType = tariffCalcAnswers['business_type'] || 'ip';
+            const isIP = formType === 'ip';
+            
+            // 1. Сбор баллов и флагов
+            QUESTIONS.forEach(q => {
+                const userAns = tariffCalcAnswers[q.id];
+                if (!userAns) return;
+
+                const selectedIds = Array.isArray(userAns) ? userAns : [userAns];
+                let factorCount = 0;
+                
+                q.options.forEach(opt => {
+                    if (selectedIds.includes(opt.id)) {
+                        if (opt.flags) opt.flags.forEach(f => flags.add(f));
+                        if (opt.points) totalPoints += opt.points;
+                        
+                        // Логика для усложняющих факторов
+                        if (q.id === 'extra_factors' && opt.id !== 'none') {
+                            factorCount++;
+                            let pts = isIP ? opt.pts_ip : opt.pts_ooo;
+                            totalPoints += pts || 0;
+                            appliedFactors.push(opt.label);
+                        } else if (q.id !== 'extra_factors' && (opt.points > 0 || opt.flags)) {
+                            // Собираем причины для финала
+                            if (q.id !== 'business_type' && q.id !== 'tax_system') {
+                                appliedFactors.push(opt.label);
+                            }
+                        }
+                    }
+                });
+                
+                // Доп коэффициент за 3+ фактора
+                if (q.id === 'extra_factors' && factorCount >= 3) {
+                    totalPoints += 2;
+                }
+            });
+
+            // 2. Базовое сопоставление баллов и коридоров
+            let resultCorridor = CORRIDORS.MINIMAL;
+            
+            if (totalPoints >= 17) resultCorridor = CORRIDORS.FULL;
+            else if (totalPoints >= 13) resultCorridor = CORRIDORS.PREMIUM;
+            else if (totalPoints >= 10) resultCorridor = tariffCalcAnswers['tax_system']?.includes('osno') ? CORRIDORS.OSNO_LIGHT : CORRIDORS.PRO;
+            else if (totalPoints >= 7) resultCorridor = CORRIDORS.STANDARD_PLUS;
+            else if (totalPoints >= 4) resultCorridor = CORRIDORS.BASE;
+            else if (totalPoints >= 2) resultCorridor = CORRIDORS.LIGHT_USN;
+
+            // 3. ПРИМЕНЕНИЕ ОСОБЫХ ПРАВИЛ
+            let hasZero = tariffCalcAnswers['activity'] === 'zero';
+            let hasSlow = tariffCalcAnswers['activity'] === 'slow';
+            let hasLowAct = hasZero || hasSlow;
+            let hasNoEmp = tariffCalcAnswers['employees'] === 'e_0';
+            let hasNoVat = tariffCalcAnswers['vat'] === 'no';
+            let hasAusn = tariffCalcAnswers['tax_system']?.includes('ausn_d') || tariffCalcAnswers['tax_system']?.includes('ausn_dr');
+            let hasPatent = tariffCalcAnswers['tax_system']?.includes('patent');
+            let hasOsno = tariffCalcAnswers['tax_system']?.includes('osno');
+            let hasUsn = tariffCalcAnswers['tax_system']?.includes('usn_6') || tariffCalcAnswers['tax_system']?.includes('usn_15');
+            let hasNko = formType === 'nko';
+            let hasMp = tariffCalcAnswers['extra_factors']?.includes('mp');
+            let isFullContour = tariffCalcAnswers['primary_docs'] === 'full';
+            let isPayMng = tariffCalcAnswers['primary_docs'] === 'pay';
+
+            if (formType === 'plan') {
+                resultCorridor = CORRIDORS.STARTUP;
+            } else if (flags.has('has_ved') || tariffCalcAnswers['employees'] === 'e_10_plus') {
+                resultCorridor = CORRIDORS.INDIVIDUAL;
+            } else if (hasZero && (hasAusn || hasPatent) && hasNoEmp && hasNoVat) {
+                resultCorridor = CORRIDORS.MINIMAL;
+            } else if (hasZero && hasOsno && hasNoEmp) {
+                resultCorridor = CORRIDORS.ZERO_OSNO;
+            } else if (isFullContour && ['active', 'fluctuating'].includes(tariffCalcAnswers['activity'])) {
+                resultCorridor = CORRIDORS.INDIVIDUAL;
+            } else if (isFullContour || isPayMng) {
+                resultCorridor = CORRIDORS.FULL;
+            } else if (hasOsno && tariffCalcAnswers['vat'] === 'yes_osno') {
+                if (resultCorridor.id < CORRIDORS.OSNO_LIGHT.id) resultCorridor = CORRIDORS.OSNO_LIGHT;
+            } else if (hasNko && hasNoEmp && hasLowAct) {
+                resultCorridor = CORRIDORS.SPEC_LIGHT;
+            } else if (hasUsn && hasNoVat && hasSlow && hasNoEmp) {
+                resultCorridor = CORRIDORS.LIGHT_USN;
+            } else if (hasMp) {
+                if (isIP && hasNoEmp && hasNoVat && ['zero', 'slow', 'small'].includes(tariffCalcAnswers['activity'])) {
+                    if (resultCorridor.id > CORRIDORS.STANDARD_PLUS.id) resultCorridor = CORRIDORS.STANDARD_PLUS;
+                } else {
+                    if (resultCorridor.id < CORRIDORS.STANDARD_PLUS.id) resultCorridor = CORRIDORS.STANDARD_PLUS;
+                }
+            }
+
+            return {
+                corridor: resultCorridor,
+                points: totalPoints,
+                flags: Array.from(flags),
+                factors: appliedFactors
+            };
+        }
+
+        function tariffCalcInit() {
+            const container = document.getElementById('tariff-quiz-container');
+            if(!container) return; // Prevent errors if DOM isn't ready
+            
+            container.innerHTML = '';
+            
+            QUESTIONS.forEach((q, index) => {
+                const stepDiv = document.createElement('div');
+                stepDiv.id = `tariff-step-${index}`;
+                stepDiv.className = `step-container ${index === 0 ? 'step-active' : 'step-hidden'}`;
+                
+                let optionsHtml = '';
+                q.options.forEach(opt => {
+                    const isCheckbox = q.type === 'checkbox';
+                    const inputType = isCheckbox ? 'checkbox' : 'radio';
+                    const name = isCheckbox ? `${q.id}[]` : q.id;
+                    const onChangeAction = isCheckbox && q.id === 'extra_factors' 
+                        ? `tariffCalcHandleCheckboxExclusive(this, '${q.id}'); tariffCalcHandleSelection('${q.id}', '${q.type}')`
+                        : `tariffCalcHandleSelection('${q.id}', '${q.type}')`;
+                    
+                    optionsHtml += `
+                        <label class="relative flex items-start p-4 cursor-pointer rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition-all group option-label">
+                            <div class="flex items-center h-5">
+                                <input type="${inputType}" name="${name}" value="${opt.id}" class="peer sr-only" onchange="${onChangeAction}">
+                                <div class="w-5 h-5 border border-gray-500 rounded-${isCheckbox ? 'sm' : 'full'} flex items-center justify-center peer-checked:border-gro-accent peer-checked:bg-gro-accent transition-all">
+                                    <svg class="w-3 h-3 text-white opacity-0 peer-checked:opacity-100" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                </div>
+                            </div>
+                            <div class="ml-3 flex-1">
+                                <span class="block text-sm font-medium text-gray-200 group-hover:text-white">${opt.label}</span>
+                            </div>
+                            <div class="absolute inset-0 border border-transparent rounded-xl pointer-events-none transition-all active-ring"></div>
+                        </label>
+                    `;
+                });
+
+                stepDiv.innerHTML = `
+                    <h2 class="text-2xl font-bold text-white mb-6">${q.title}</h2>
+                    <div class="space-y-3 ${q.options.length > 5 ? 'max-h-[40vh] overflow-y-auto pr-2 no-scrollbar' : ''}">
+                        ${optionsHtml}
+                    </div>
+                `;
+                container.appendChild(stepDiv);
+            });
+
+            const finalDiv = document.createElement('div');
+            finalDiv.id = 'tariff-step-final';
+            finalDiv.className = 'step-container step-hidden';
+            container.appendChild(finalDiv);
+
+            tariffCalcUpdateUI();
+            
+            document.getElementById('tariff-btn-next').addEventListener('click', tariffCalcNextStep);
+            document.getElementById('tariff-btn-prev').addEventListener('click', tariffCalcPrevStep);
+        }
+
+        function tariffCalcHandleCheckboxExclusive(checkbox, questionId) {
+            const inputs = document.querySelectorAll(`input[name="${questionId}[]"]`);
+            if (checkbox.value === 'none' && checkbox.checked) {
+                inputs.forEach(input => {
+                    if (input.value !== 'none') input.checked = false;
+                });
+            } else if (checkbox.checked) {
+                inputs.forEach(input => {
+                    if (input.value === 'none') input.checked = false;
+                });
+            }
+        }
+
+        function tariffCalcHandleSelection(questionId, type) {
+            const inputs = document.querySelectorAll(`input[name="${type === 'checkbox' ? questionId + '[]' : questionId}"]`);
+            
+            inputs.forEach(input => {
+                const label = input.closest('label');
+                const ring = label.querySelector('.active-ring');
+                if (input.checked) {
+                    label.classList.add('bg-gro-accent/10');
+                    label.classList.remove('bg-white/5');
+                    ring.style.boxShadow = '0 0 0 1px #3b82f6, 0 0 15px rgba(59, 130, 246, 0.15)';
+                } else {
+                    label.classList.remove('bg-gro-accent/10');
+                    label.classList.add('bg-white/5');
+                    ring.style.boxShadow = 'none';
+                }
+            });
+
+            if (type === 'radio') {
+                const selected = document.querySelector(`input[name="${questionId}"]:checked`);
+                if (selected) tariffCalcAnswers[questionId] = selected.value;
+            } else {
+                const selected = Array.from(document.querySelectorAll(`input[name="${questionId}[]"]:checked`)).map(el => el.value);
+                tariffCalcAnswers[questionId] = selected.length > 0 ? selected : null;
+            }
+
+            tariffCalcValidateStep();
+            tariffCalcUpdateLivePanel();
+        }
+
+        function tariffCalcValidateStep() {
+            const currentQ = QUESTIONS[tariffCalcCurrentStep];
+            if (!currentQ) return true;
+
+            const btnNext = document.getElementById('tariff-btn-next');
+            const hasAnswer = tariffCalcAnswers[currentQ.id] !== undefined && tariffCalcAnswers[currentQ.id] !== null && 
+                             (Array.isArray(tariffCalcAnswers[currentQ.id]) ? tariffCalcAnswers[currentQ.id].length > 0 : true);
+            
+            if (hasAnswer) {
+                btnNext.classList.remove('opacity-50', 'cursor-not-allowed');
+                return true;
+            } else {
+                btnNext.classList.add('opacity-50', 'cursor-not-allowed');
+                return false;
+            }
+        }
+
+        function tariffCalcCheckEarlyFinish() {
+            if (tariffCalcCurrentStep === 4 && tariffCalcAnswers['activity'] === 'zero' && tariffCalcAnswers['employees'] === 'e_0') {
+                return true;
+            }
+            return false;
+        }
+
+        function tariffCalcUpdateUI() {
+            document.querySelectorAll('#tariff-quiz-container .step-container').forEach((el, index) => {
+                if (el.id === 'tariff-step-final') return;
+                
+                if (index === tariffCalcCurrentStep) {
+                    el.classList.remove('step-hidden');
+                    el.classList.add('step-active');
+                } else {
+                    el.classList.add('step-hidden');
+                    el.classList.remove('step-active');
+                }
+            });
+
+            // Прогресс бар
+            const displayStep = tariffCalcCurrentStep + 1;
+            const progressPercent = Math.max(14, Math.round((displayStep / tariffCalcTotalSteps) * 100));
+            
+            document.getElementById('tariff-progress-bar').style.width = `${progressPercent}%`;
+            document.getElementById('tariff-progress-text').innerText = `Вопрос ${displayStep} из ${tariffCalcTotalSteps}`;
+            document.getElementById('tariff-progress-percent').innerText = `${progressPercent}%`;
+
+            const btnPrev = document.getElementById('tariff-btn-prev');
+            const btnNext = document.getElementById('tariff-btn-next');
+
+            if (tariffCalcCurrentStep === 0) {
+                btnPrev.classList.add('opacity-0', 'pointer-events-none');
+            } else {
+                btnPrev.classList.remove('opacity-0', 'pointer-events-none');
+            }
+
+            if (tariffCalcCurrentStep === tariffCalcTotalSteps - 1 || tariffCalcCheckEarlyFinish()) {
+                btnNext.innerHTML = 'Рассчитать <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
+            } else {
+                btnNext.innerHTML = 'Далее <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>';
+            }
+
+            tariffCalcValidateStep();
+            tariffCalcUpdateLivePanel();
+        }
+
+        function tariffCalcUpdateLivePanel() {
+            const livePrice = document.getElementById('tariff-live-price');
+            const liveCorridor = document.getElementById('tariff-live-corridor');
+
+            if (Object.keys(tariffCalcAnswers).length < 3) {
+                livePrice.innerText = "Ответьте на первые вопросы";
+                livePrice.classList.add('text-gray-500', 'text-lg');
+                livePrice.classList.remove('text-white', 'text-3xl');
+                liveCorridor.innerText = "Уточняем...";
+                return;
+            }
+
+            const res = tariffCalcCalculateResult();
+            livePrice.classList.remove('text-gray-500', 'text-lg');
+            livePrice.classList.add('text-white', 'text-3xl');
+            
+            livePrice.style.opacity = '0';
+            setTimeout(() => {
+                livePrice.innerText = res.corridor.price;
+                liveCorridor.innerText = res.corridor.name;
+                livePrice.style.opacity = '1';
+            }, 150);
+        }
+
+        function tariffCalcNextStep() {
+            if (!tariffCalcValidateStep()) {
+                showToast('Пожалуйста, выберите вариант ответа');
+                return;
+            }
+
+            if (tariffCalcCheckEarlyFinish() || tariffCalcCurrentStep === tariffCalcTotalSteps - 1) {
+                tariffCalcShowFinalScreen();
+            } else {
+                tariffCalcCurrentStep++;
+                tariffCalcUpdateUI();
+            }
+        }
+
+        function tariffCalcPrevStep() {
+            if (tariffCalcCurrentStep > 0) {
+                tariffCalcCurrentStep--;
+                tariffCalcUpdateUI();
+            }
+        }
+        
+        function tariffCalcShowFinalScreen() {
+            const res = tariffCalcCalculateResult();
+            
+            document.querySelectorAll('#tariff-quiz-container .step-container').forEach(el => {
+                el.classList.add('step-hidden');
+                el.classList.remove('step-active');
+            });
+            document.getElementById('tariff-nav-container').style.display = 'none';
+            document.getElementById('tariff-progress-container').style.display = 'none';
+            
+            if (window.innerWidth < 1024) {
+                document.getElementById('tariff-live-panel').style.display = 'none';
+            }
+
+            const finalDiv = document.getElementById('tariff-step-final');
+            finalDiv.classList.remove('step-hidden');
+            finalDiv.classList.add('step-active');
+
+            let factorsHtml = res.factors.length > 0 
+                ? res.factors.slice(0, 5).map(f => `<li class="flex items-start text-sm text-gray-300"><svg class="w-4 h-4 text-gro-teal mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>${f}</li>`).join('')
+                : '<li class="text-sm text-gray-500">Базовые условия обслуживания</li>';
+
+            let warningsHtml = '';
+            if (res.flags.includes('tax_unknown') || res.flags.includes('vat_unknown')) {
+                warningsHtml += `<div class="bg-yellow-900/20 border border-yellow-500/30 text-yellow-200 text-xs p-3 rounded-lg mt-4">Точный налоговый режим и НДС уточним на коротком звонке.</div>`;
+            }
+
+            finalDiv.innerHTML = `
+                <div class="text-center mb-8">
+                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gro-teal/10 border border-gro-teal/30 text-gro-teal mb-4 shadow-[0_0_20px_rgba(20,184,166,0.3)]">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <h2 class="text-3xl font-bold text-white mb-2">Ваш предварительный тарифный коридор</h2>
+                    <p class="text-gray-400">Подходящий формат: <span class="text-gro-accent font-medium">${res.corridor.name}</span></p>
+                </div>
+
+                <div class="bg-black/30 rounded-xl p-6 border border-white/5 mb-6">
+                    <div class="text-center mb-6">
+                        <div class="text-sm text-gray-500 mb-1">Ориентир стоимости</div>
+                        <div class="text-3xl font-bold text-white">${res.corridor.price}</div>
+                    </div>
+                    
+                    <div class="border-t border-white/10 pt-4">
+                        <h4 class="text-sm font-semibold text-white mb-3">Почему выбран этот коридор:</h4>
+                        <ul class="space-y-2 mb-2">
+                            ${factorsHtml}
+                        </ul>
+                        ${warningsHtml}
+                    </div>
+                </div>
+
+                <div class="space-y-4 mb-8">
+                    <div class="text-sm text-gray-400 p-4 bg-white/5 rounded-lg border border-white/5 leading-relaxed">
+                        <strong>Это предварительный ориентир.</strong> Мы не считаем стоимость механически по каждой операции. Сначала смотрим фактический объем работы, затем согласовываем понятную цену и фиксируем ее в договоре.
+                    </div>
+                    <div class="text-sm text-gray-400 p-4 bg-gro-blue/10 rounded-lg border border-gro-blue/30 leading-relaxed">
+                        При стабильной работе можем зафиксировать стоимость. Если нагрузка меняется от квартала к кварталу, стоимость может пересматриваться как вверх, так и вниз. Любое изменение согласовывается заранее.
+                    </div>
+                </div>
+
+                <form id="tariff-lead-form" class="space-y-4" onsubmit="tariffCalcSubmitForm(event)">
+                    <h3 class="text-lg font-bold text-white mb-4">Получить точную фиксацию цены</h3>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs text-gray-500 mb-1">Ваше имя *</label>
+                            <input type="text" required placeholder="Иван Иванов" class="w-full dark-input rounded-lg px-4 py-3 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-500 mb-1">Телефон *</label>
+                            <input type="tel" required placeholder="+7 (999) 000-00-00" class="w-full dark-input rounded-lg px-4 py-3 text-sm">
+                        </div>
+                    </div>
+                    
+                    <div class="pt-2 flex flex-col sm:flex-row gap-4 items-center">
+                        <button type="submit" id="tariff-btn-submit" class="w-full sm:w-auto flex-1 bg-gro-accent text-white px-8 py-4 rounded-xl text-sm font-bold hover:bg-blue-600 transition-all shadow-neon hover:shadow-neon-hover">
+                            Получить точный расчет
+                        </button>
+                        <button type="button" onclick="tariffCalcResetQuiz()" class="w-full sm:w-auto px-6 py-4 rounded-xl text-sm font-medium text-gray-300 bg-white/5 hover:bg-white/10 hover:text-white border border-white/10 transition-all">
+                            Пройти заново
+                        </button>
+                    </div>
+                </form>
+            `;
+        }
+
+        function tariffCalcSubmitForm(e) {
+            e.preventDefault();
+            const btn = document.getElementById('tariff-btn-submit');
+            const originalText = btn.innerHTML;
+            
+            btn.innerHTML = `<svg class="animate-spin w-5 h-5 mx-auto text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
+            btn.disabled = true;
+
+            setTimeout(() => {
+                showToast('Заявка подготовлена. В рабочей версии она будет отправляться в Telegram.');
+                document.getElementById('tariff-lead-form').reset();
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }, 1500);
+        }
+
+        function tariffCalcResetQuiz() {
+            tariffCalcCurrentStep = 0;
+            tariffCalcAnswers = {};
+            
+            document.getElementById('tariff-nav-container').style.display = 'flex';
+            document.getElementById('tariff-progress-container').style.display = 'block';
+            document.getElementById('tariff-live-panel').style.display = 'block';
+            
+            tariffCalcInit();
+            document.getElementById('tariff-calculator').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        window.addEventListener('DOMContentLoaded', tariffCalcInit);
+
+    </script>
+</body>
+</html>
