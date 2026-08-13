@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>税制计算器 | GRO Consulting</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        gro: {
+                            bg: '#03050a',
+                            card: '#0a0f1a',
+                            border: 'rgba(255, 255, 255, 0.05)',
+                            primary: '#1b3671',
+                            accent: '#3b82f6',
+                            teal: '#14b8a6',
+                            text: '#f8fafc',
+                            textMuted: '#94a3b8'
+                        }
+                    },
+                    boxShadow: {
+                        'glow-accent': '0 0 20px rgba(59, 130, 246, 0.15)',
+                        'glow-teal': '0 0 20px rgba(20, 184, 166, 0.15)',
+                        'card': '0 4px 24px -1px rgba(0, 0, 0, 0.5)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #03050a; color: #f8fafc; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+
+        .glass-card {
+            background: #0a0f1a; border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.5); position: relative; overflow: hidden;
+        }
+        
+        .gro-input {
+            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff; transition: all 0.2s ease;
+        }
+        .gro-input:focus {
+            outline: none; border-color: #3b82f6; background: rgba(59, 130, 246, 0.05);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%;
+            background: #3b82f6; cursor: pointer; margin-top: -6px; box-shadow: 0 0 10px rgba(59,130,246,0.5);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%; height: 4px; cursor: pointer; background: rgba(255,255,255,0.1); border-radius: 2px;
+        }
+        .radio-btn-group input[type="radio"]:checked + label {
+            background-color: rgba(59, 130, 246, 0.15); border-color: #3b82f6; color: #fff;
+        }
+
+        .tooltip-icon {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0;
+            background-color: rgba(255, 255, 255, 0.1); color: #94a3b8;
+            font-size: 10px; font-weight: bold; cursor: pointer; margin-left: 6px;
+            transition: background-color 0.2s;
+        }
+        .tooltip-icon:hover { background-color: rgba(255, 255, 255, 0.2); color: #fff; }
+        
+        #global-tooltip {
+            position: fixed; z-index: 9999; visibility: hidden; opacity: 0;
+            background: #1e293b; color: #f8fafc; font-size: 11px; line-height: 1.4;
+            padding: 8px 12px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5); max-width: 250px;
+            pointer-events: none; transition: opacity 0.2s, visibility 0.2s;
+        }
+        #global-tooltip.show { visibility: visible; opacity: 1; }
+
+        .drawer-overlay {
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(2px);
+            z-index: 100; opacity: 0; visibility: hidden; transition: all 0.3s ease;
+        }
+        .drawer-overlay.active { opacity: 1; visibility: visible; }
+        
+        .drawer-panel {
+            position: fixed; top: 0; right: 0; bottom: 0; z-index: 101;
+            background: #0a0f1a; border-left: 1px solid rgba(255,255,255,0.05);
+            box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+            width: 100%; max-width: 760px;
+            transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex; flex-direction: column;
+        }
+        .drawer-panel.active { transform: translateX(0); }
+        
+        @media (max-width: 640px) {
+            .drawer-panel { top: auto; bottom: 0; height: 90vh; border-left: none; border-top: 1px solid rgba(255,255,255,0.05); border-radius: 20px 20px 0 0; transform: translateY(100%); }
+            .drawer-panel.active { transform: translateY(0); }
+        }
+
+        .modal-overlay { opacity: 0; visibility: hidden; transition: all 0.3s ease; z-index: 150; }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        .modal-content { transform: scale(0.95); transition: all 0.3s ease; }
+        .modal-overlay.active .modal-content { transform: scale(1); }
+
+        .table-row-hover:hover { background: rgba(255, 255, 255, 0.02); }
+        .best-scenario-row { background: linear-gradient(90deg, rgba(20, 184, 166, 0.05) 0%, rgba(20, 184, 166, 0) 100%); border-left: 2px solid #14b8a6; }
+        .chart-bar-horizontal { transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        #toast { visibility: hidden; opacity: 0; transition: opacity 0.3s, bottom 0.3s, visibility 0.3s; z-index: 200; }
+        #toast.show { visibility: visible; opacity: 1; bottom: 30px; }
+
+        :root { color-scheme: dark; }
+        body { background: radial-gradient(circle at 14% 10%, rgba(26, 70, 145, 0.54), transparent 38%), radial-gradient(circle at 76% 14%, rgba(82, 42, 131, 0.25), transparent 34%), #03050a; padding-top: 84px; overflow-x: hidden; }
+        body.light-theme { color-scheme: light; background: linear-gradient(135deg, #eef5ff 0%, #f9fbff 48%, #f5f0ff 100%); color: #0e1a33; }
+        body.light-theme .text-white { color: #111c35 !important; }
+        body.light-theme .text-gray-200, body.light-theme .text-gray-300, body.light-theme .text-gray-400, body.light-theme .text-gro-textMuted { color: #59657a !important; }
+        body.light-theme .glass-card, body.light-theme .glass-panel { background: rgba(255,255,255,.74) !important; border-color: rgba(100,130,190,.22) !important; box-shadow: 0 20px 60px rgba(80,116,180,.16); }
+        body.light-theme .gro-input, body.light-theme .custom-select { background: rgba(255,255,255,.92) !important; border-color: rgba(116,137,172,.28) !important; color: #111c35 !important; }
+        .site-nav { position: fixed; inset: 0 0 auto 0; height: 84px; z-index: 120; border-bottom: 1px solid rgba(255,255,255,.08); background: rgba(3,5,10,.74); backdrop-filter: blur(18px); }
+        body.light-theme .site-nav { background: rgba(248,251,255,.82); border-bottom-color: rgba(30,62,120,.10); }
+        .nav-inner { max-width: 1200px; height: 100%; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+        .logo { font-size: 24px; font-weight: 900; color: #fff; text-decoration: none; letter-spacing: 0; }
+        .logo span { color: #3b82f6; }
+        body.light-theme .logo { color: #10182f; }
+        .nav-actions { display: flex; align-items: center; gap: 18px; }
+        .nav-phone { color: #d7deed; font-weight: 800; text-decoration: none; }
+        body.light-theme .nav-phone { color: #23324e; }
+        .lang, .theme-toggle { border: 1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.04); color: #d7deed; border-radius: 999px; min-height: 46px; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; font-weight: 800; }
+        .lang { padding: 0 18px; }
+        .theme-toggle { width: 52px; cursor: pointer; }
+        body.light-theme .lang, body.light-theme .theme-toggle { background: rgba(255,255,255,.72); border-color: rgba(30,62,120,.14); color: #23324e; }
+        .sun-icon { display: none; } body.light-theme .sun-icon { display: block; } body.light-theme .moon-icon { display: none; }
+        .gro-ribbon { position: fixed; inset: 0 auto auto 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 0; color: #2563eb; transform: translate3d(var(--ribbon-x,0), var(--ribbon-y,0), 0); opacity: .98; }
+        .ribbon-glow { animation: groWave 8s ease-in-out infinite alternate; transform-origin: 50% 50%; }
+        .ribbon-core { animation: groWaveCore 6.5s ease-in-out infinite alternate; transform-origin: 50% 50%; }
+        .ribbon-line { animation: groWaveLine 5.5s ease-in-out infinite alternate; }
+        body.light-theme .gro-ribbon { color: #3b82f6; opacity: .55; }
+        @keyframes groWave { from { transform: translate3d(-24px, -8px, 0) scaleX(1.01); } to { transform: translate3d(34px, 18px, 0) scaleX(1.05); } }
+        @keyframes groWaveCore { from { transform: translate3d(26px, 10px, 0) scaleY(.98); } to { transform: translate3d(-40px, -14px, 0) scaleY(1.07); } }
+        @keyframes groWaveLine { from { transform: translate3d(-36px, 12px, 0); } to { transform: translate3d(48px, -18px, 0); } }
+        .service-mode-button { display: inline-flex; align-items: center; gap: 8px; padding: 9px 12px; border-radius: 12px; background: rgba(255,255,255,.055); border: 1px solid rgba(255,255,255,.10); color: #cbd5e1; font-size: 12px; font-weight: 800; transition: .2s ease; }
+        .service-mode-button:hover { background: rgba(59,130,246,.16); color: #fff; border-color: rgba(59,130,246,.34); }
+        body.light-theme .service-mode-button { background: rgba(255,255,255,.82); color: #334155; border-color: rgba(59,130,246,.16); }
+        .source-note { max-width: 1200px; margin: -2rem auto 3rem; padding: 0 1rem; color: #667085; font-size: 11px; line-height: 1.55; text-align: center; }
+        .tools-nav-link { min-height: 44px; border-radius: 14px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 0 14px; background: rgba(255,255,255,.055); border: 1px solid rgba(255,255,255,.10); color: #cbd5e1; font-size: 12px; font-weight: 800; text-decoration: none; transition: .2s ease; }
+        .tools-nav-link:hover { background: rgba(59,130,246,.16); color: #fff; border-color: rgba(59,130,246,.34); }
+        body.light-theme .tools-nav-link { background: rgba(255,255,255,.82); color: #334155; border-color: rgba(59,130,246,.16); }
+        body.light-theme .tools-nav-link:hover { background: #fff; color: #1d4ed8; }
+        .lead-card { border-top: 0; border-color: rgba(59,130,246,.24); background: linear-gradient(135deg, rgba(10,15,26,.94), rgba(11,30,62,.78)); }
+        .lead-card::before { content: ""; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(circle at 82% 0%, rgba(59,130,246,.18), transparent 34%); }
+        .lead-field { background: rgba(255,255,255,.075); border: 1px solid rgba(148,163,184,.32); color: #f8fafc; transition: .2s ease; }
+        .lead-field:focus { outline: none; border-color: rgba(59,130,246,.92); box-shadow: 0 0 0 4px rgba(59,130,246,.16); background: rgba(255,255,255,.11); }
+        .lead-field::placeholder { color: rgba(203,213,225,.62); }
+        .lead-submit { background: #3b82f6; color: #fff; box-shadow: 0 18px 38px rgba(59,130,246,.24); }
+        .lead-submit:hover { background: #2563eb; transform: translateY(-1px); }
+        body.light-theme .lead-card { background: linear-gradient(135deg, rgba(255,255,255,.86), rgba(232,240,255,.82)) !important; border-color: rgba(37,99,235,.18) !important; }
+        body.light-theme .lead-field { background: rgba(255,255,255,.96); border-color: rgba(27,54,113,.2); color: #0e1a33; }
+        body.light-theme .lead-field::placeholder { color: rgba(51,65,85,.56); }
+        @media (max-width: 720px) { .nav-phone { display: none; } .logo { font-size: 20px; } .site-nav { height: 72px; } body { padding-top: 72px; } .service-mode-button span { display: none; } }
+
+    </style>
+</head>
+<body class="min-h-screen flex flex-col font-sans text-gray-200">
+
+    <svg class="gro-ribbon" viewBox="0 0 1600 520" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="ribbonGradientMainTax" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="currentColor" stop-opacity="0.03"/><stop offset="0.36" stop-color="currentColor" stop-opacity="0.34"/><stop offset="0.62" stop-color="currentColor" stop-opacity="0.82"/><stop offset="1" stop-color="currentColor" stop-opacity="0.08"/></linearGradient><linearGradient id="ribbonGradientSoftTax" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="currentColor" stop-opacity="0.02"/><stop offset="0.55" stop-color="currentColor" stop-opacity="0.24"/><stop offset="1" stop-color="currentColor" stop-opacity="0.06"/></linearGradient><filter id="ribbonBlurTax" x="-20%" y="-90%" width="140%" height="280%"><feGaussianBlur stdDeviation="11" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><path class="ribbon-glow" d="M-80 288 C 244 88, 523 484, 900 292 C 1144 168, 1326 82, 1700 26 L1700 136 C 1308 190, 1088 360, 742 430 C 472 486, 224 304, -80 378 Z" fill="url(#ribbonGradientSoftTax)"/><path class="ribbon-core" d="M-90 258 C 214 336, 392 474, 754 424 C 1055 383, 1194 240, 1700 94 L1700 176 C 1312 312, 1054 496, 674 478 C 348 462, 122 330, -90 302 Z" fill="url(#ribbonGradientMainTax)" filter="url(#ribbonBlurTax)"/><path class="ribbon-line" d="M-90 320 C 250 244, 438 386, 760 372 C 1072 360, 1262 224, 1700 138" fill="none" stroke="currentColor" stroke-opacity="0.72" stroke-width="6" filter="url(#ribbonBlurTax)"/></svg>
+    <nav class="site-nav"><div class="nav-inner"><a class="logo" href="https://gro-consult.ru/zh/" data-local-href="http://127.0.0.1:4300/zh/" aria-label="GRO Consulting">GRO<span>CONSULTING</span></a><div class="nav-actions"><a class="nav-phone" href="tel:+74955653797">8 (495) 565-37-97</a><a class="lang" href="https://gro-consult.ru/tax/" data-local-href="http://127.0.0.1:4300/tax/">中文 / RU</a><button class="theme-toggle" type="button" data-theme-toggle aria-label="切换主题"><svg class="moon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M21 14.2A7.6 7.6 0 0 1 9.8 3a8.8 8.8 0 1 0 11.2 11.2Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg><svg class="sun-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M12 2v3M12 19v3M4.9 4.9 7 7M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1 7 17M17 7l2.1-2.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button></div></div></nav>
+
+
+    <div id="global-tooltip"></div>
+
+    <header class="pt-12 pb-8 px-4 text-center relative shrink-0">
+        <h1 class="text-4xl sm:text-5xl font-bold text-white mb-3 tracking-tight">税制计算器</h1>
+        <p class="text-base text-gro-textMuted max-w-2xl mx-auto">按收入、费用、增值税和保险缴费比较不同税制，估算税负和净利润。</p>
+    </header>
+
+    <main class="flex-grow max-w-[1200px] mx-auto w-full px-4 sm:px-6 pb-20 relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left column -->
+        <div class="lg:col-span-5 space-y-4 lg:sticky lg:top-6">
+            <div class="glass-card rounded-2xl p-5 sm:p-6 relative">
+                
+                <button type="button" onclick="openModal('settingsModal')" class="absolute top-5 right-5 service-mode-button" data-tooltip="服务模式用于调整税率、限额或法规参数。普通计算无需使用。" aria-label="计算参数">
+                    <span>服务模式</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                </button>
+
+                <div class="mb-5 pr-8">
+                    <h2 class="text-lg font-semibold text-white mb-1">业务参数</h2>
+                </div>
+
+                <form id="calcForm" class="space-y-4" onsubmit="event.preventDefault();">
+                    
+                    <div>
+                        <div class="flex items-center mb-1.5">
+                            <label class="text-sm font-medium text-gray-300">企业类型</label>
+                            <span class="tooltip-icon" tabindex="0" data-tooltip="请选择要计算的企业类型。个体工商户和有限责任公司的普通税制、个人所得税和保险缴费计算方式不同。">?</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 radio-btn-group">
+                            <div>
+                                <input type="radio" name="orgType" id="orgIP" value="IP" class="hidden calc-trigger" checked>
+                                <label for="orgIP" class="block text-center p-2 rounded border border-gro-border cursor-pointer transition-all text-xs font-medium text-gray-400">个体工商户</label>
+                            </div>
+                            <div>
+                                <input type="radio" name="orgType" id="orgOOO" value="OOO" class="hidden calc-trigger">
+                                <label for="orgOOO" class="block text-center p-2 rounded border border-gro-border cursor-pointer transition-all text-xs font-medium text-gray-400">有限责任公司</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex items-center mb-1.5">
+                            <label class="text-sm font-medium text-gray-300">年收入，卢布</label>
+                            <span class="tooltip-icon" tabindex="0" data-tooltip="全年销售商品、工程或服务取得的总收入。含增值税方案请填写客户实际支付的含税金额。">?</span>
+                        </div>
+                        <div class="relative">
+                            <input type="text" id="revenue" class="gro-input calc-trigger w-full rounded-md px-3 py-2 text-right font-mono text-sm" placeholder="0" data-type="currency" autocomplete="off">
+                            <span class="absolute left-3 top-2 text-gray-500 text-sm">₽</span>
+                        </div>
+                    </div>
+
+                    <div class="pt-3 border-t border-white/5 space-y-3">
+                        <div>
+                            <div class="flex items-center mb-1.5">
+                                <label class="text-sm font-medium text-gray-300">变动成本，卢布</label>
+                                <span class="tooltip-icon" tabindex="0" data-tooltip="随业务量变化的成本：商品和材料采购、生产成本、佣金、配送以及其他直接成本。">?</span>
+                            </div>
+                            <div class="relative">
+                                <input type="text" id="varCosts" class="gro-input calc-trigger w-full rounded-md px-3 py-2 text-right font-mono text-sm" placeholder="0" data-type="currency" autocomplete="off">
+                                <span class="absolute left-3 top-2 text-gray-500 text-sm">₽</span>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <div class="flex items-center">
+                                    <label class="text-xs text-gray-400">含增值税比例</label>
+                                    <span class="tooltip-icon" tabindex="0" data-tooltip="供应商文件中单独列示增值税的变动成本比例，用于计算进项增值税。">?</span>
+                                </div>
+                                <span id="varVatShareVal" class="text-xs font-medium text-gro-accent font-mono">0%</span>
+                            </div>
+                            <input type="range" id="varVatShare" class="calc-trigger" min="0" max="100" value="0">
+                        </div>
+                    </div>
+
+                    <div class="pt-3 border-t border-white/5 space-y-3">
+                        <div>
+                            <div class="flex items-center mb-1.5">
+                                <label class="text-sm font-medium text-gray-300">固定费用，卢布</label>
+                                <span class="tooltip-icon" tabindex="0" data-tooltip="与业务量不直接相关的经常性费用：租金、通信、服务、会计和行政费用。">?</span>
+                            </div>
+                            <div class="relative">
+                                <input type="text" id="fixedCosts" class="gro-input calc-trigger w-full rounded-md px-3 py-2 text-right font-mono text-sm" placeholder="0" data-type="currency" autocomplete="off">
+                                <span class="absolute left-3 top-2 text-gray-500 text-sm">₽</span>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <div class="flex items-center">
+                                    <label class="text-xs text-gray-400">含增值税比例</label>
+                                    <span class="tooltip-icon" tabindex="0" data-tooltip="供应商文件中单独列示增值税的固定费用比例，用于计算进项增值税。">?</span>
+                                </div>
+                                <span id="fixedVatShareVal" class="text-xs font-medium text-gro-accent font-mono">0%</span>
+                            </div>
+                            <input type="range" id="fixedVatShare" class="calc-trigger" min="0" max="100" value="0">
+                        </div>
+                    </div>
+
+                    <div class="pt-3 border-t border-white/5">
+                        <div class="flex items-center mb-1.5">
+                            <label class="text-sm font-medium text-gray-300 leading-tight">员工保险缴费</label>
+                            <span class="tooltip-icon" tabindex="0" data-tooltip="全年为员工缴纳的保险缴费总额。没有员工或金额未知时填 0。该指标用于在限额内抵减简化税制“收入”的税额。">?</span>
+                        </div>
+                        <div class="relative">
+                            <input type="text" id="empContrib" class="gro-input calc-trigger w-full rounded-md px-3 py-2 text-right font-mono text-sm" placeholder="0" data-type="currency" autocomplete="off">
+                            <span class="absolute left-3 top-2 text-gray-500 text-sm">₽</span>
+                        </div>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="pt-4 flex flex-col gap-2">
+                        <button type="button" id="manualCalculateBtn" class="w-full bg-gro-accent hover:bg-blue-600 text-white px-4 py-2.5 rounded-lg font-medium transition-colors shadow-glow-accent text-sm">
+                            重新计算
+                        </button>
+                        <button type="button" id="fillExampleBtn" class="w-full text-gray-400 hover:text-white px-4 py-1.5 rounded text-[11px] transition-colors">
+                            填入示例
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Right column -->
+        <div class="lg:col-span-7 flex flex-col gap-4">
+            
+            <div class="mb-1 hidden lg:block">
+                <h2 class="text-xl font-bold text-white">净利润比较</h2>
+            </div>
+
+            <div class="glass-card rounded-xl p-5 border-l-4 border-l-gro-teal shadow-glow-teal flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <div class="text-[10px] font-bold text-gro-teal uppercase tracking-wider mb-1">推荐税制</div>
+                    <div id="bestRegimeName" class="text-lg sm:text-xl font-bold text-white leading-tight">请输入业务参数</div>
+                    <div id="bestRegimeDesc" class="text-[11px] text-gray-400 mt-1">—</div>
+                </div>
+                <div class="bg-black/30 rounded-lg p-3 border border-white/5 min-w-[140px] text-right">
+                    <div class="text-[10px] text-gray-400 uppercase tracking-wide mb-1">净利润</div>
+                    <div id="bestNetProfit" class="text-xl font-bold text-gray-500 font-mono leading-none mb-1">—</div>
+                    <div class="text-[10px] text-gray-500">税负： <span id="bestTaxBurden" class="font-mono">—</span></div>
+                </div>
+            </div>
+
+            <div class="glass-card rounded-xl p-5">
+                <h3 class="text-sm font-semibold text-white mb-4">净利润比较</h3>
+                <div id="horizontalChartContainer" class="flex flex-col gap-2.5 min-h-[160px] relative">
+                    <div class="absolute inset-0 flex items-center justify-center text-xs text-gray-500 z-10">图表将自动更新</div>
+                    <div class="h-5 bg-white/5 rounded w-full opacity-30"></div>
+                    <div class="h-5 bg-white/5 rounded w-3/4 opacity-30"></div>
+                    <div class="h-5 bg-white/5 rounded w-1/2 opacity-30"></div>
+                    <div class="h-5 bg-white/5 rounded w-1/3 opacity-30"></div>
+                </div>
+            </div>
+
+            <div class="glass-card rounded-xl p-5">
+                <h3 class="text-sm font-semibold text-white mb-3">最佳方案</h3>
+                <div id="topScenariosList" class="space-y-2">
+                    <div class="text-xs text-gray-500 py-2 text-center border border-dashed border-white/10 rounded">输入数据后，这里会显示最佳方案。</div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                <button onclick="openDrawer('tableDrawer')" class="py-3 bg-white/5 border border-white/10 rounded-xl text-xs font-medium text-gray-300 hover:bg-white/10 hover:text-white transition-colors flex justify-center items-center gap-2">
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                    全部税制
+                </button>
+                <button onclick="openDrawer('plDrawer')" class="py-3 bg-white/5 border border-white/10 rounded-xl text-xs font-medium text-gray-300 hover:bg-white/10 hover:text-white transition-colors flex justify-center items-center gap-2">
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    详细计算
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+                <a href="https://checking.gro-consult.ru/zh/" data-local-href="http://127.0.0.1:4301/zh/" class="tools-nav-link">合作方核验</a>
+                <a href="https://currency.gro-consult.ru/zh/" data-local-href="http://127.0.0.1:4302/zh/" class="tools-nav-link">汇率计算器</a>
+                <a href="https://gro-consult.ru/zh/#tools" data-local-href="http://127.0.0.1:4300/zh/#tools" class="tools-nav-link">全部工具</a>
+            </div>
+            
+        </div>
+    </main>
+
+    <section class="max-w-[1200px] mx-auto px-4 pb-20 w-full relative z-10 flex flex-col gap-6">
+        
+        <div class="text-[11px] text-gray-500 leading-relaxed text-center bg-white/5 p-4 rounded-xl border border-white/5 max-w-3xl mx-auto">
+            本计算仅供参考，不构成税务咨询。最终税制选择取决于业务类型、地区、员工、费用结构、法规限制以及其他因素。
+        </div>
+
+        <div class="lead-card glass-card rounded-2xl p-6 sm:p-8 text-center relative overflow-hidden shadow-2xl max-w-2xl mx-auto w-full">
+            <div class="absolute top-0 right-0 -mr-16 -mt-16 w-32 h-32 bg-gro-accent opacity-10 blur-3xl rounded-full pointer-events-none"></div>
+            <div class="relative z-10">
+            <h2 class="text-xl sm:text-2xl font-bold text-white mb-2">想让会计师核对计算吗？</h2>
+            <p class="text-sm text-gro-textMuted mb-6 max-w-md mx-auto">留下联系方式，我们将根据您的情况帮助选择合适的税制。</p>
+            <form id="leadForm" class="space-y-3 text-left max-w-md mx-auto">
+                <input type="hidden" name="需求" value="核对税制计算">
+                <input type="text" name="姓名" placeholder="您的姓名" required class="lead-field w-full rounded-xl px-4 py-3 text-sm">
+                <input type="tel" name="电话" placeholder="电话或 Telegram" required class="lead-field w-full rounded-xl px-4 py-3 text-sm">
+                <label class="flex gap-3 text-left text-xs text-gro-textMuted leading-relaxed">
+                    <input type="checkbox" required class="mt-0.5 h-4 w-4 rounded border-white/20 bg-white/5 text-gro-accent focus:ring-gro-accent">
+                    <span>我同意个人数据处理，并已阅读 GRO Consulting 网站上的相关文件。</span>
+                </label>
+                <button type="submit" class="lead-submit w-full font-bold py-3.5 rounded-xl transition-all mt-1 text-sm">
+                    获取咨询
+                </button>
+            </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Overlay & Drawers -->
+    <div id="drawerOverlay" class="drawer-overlay" onclick="closeAllDrawers()"></div>
+
+    <div id="tableDrawer" class="drawer-panel">
+        <div class="flex items-center justify-between p-5 border-b border-white/5 shrink-0">
+            <h3 class="text-lg font-bold text-white">全部税制比较</h3>
+            <button onclick="closeDrawer('tableDrawer')" class="p-2 text-gray-400 hover:text-white rounded-md bg-white/5 hover:bg-white/10 transition-colors">&times;</button>
+        </div>
+        <div class="p-5 overflow-y-auto custom-scroll flex-grow">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse min-w-[550px]">
+                    <thead>
+                        <tr class="border-b border-white/5 text-[10px] uppercase text-gray-500 bg-black/40">
+                            <th class="py-3 px-4 font-medium">税制</th>
+                            <th class="py-3 px-4 font-medium text-right">税额</th>
+                            <th class="py-3 px-4 font-medium text-right">增值税</th>
+                            <th class="py-3 px-4 font-medium text-right">净利润</th>
+                            <th class="py-3 px-4 font-medium text-center">税负</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultsTableBody" class="text-xs divide-y divide-white/5">
+                        <tr><td colspan="5" class="py-10 text-center text-gray-500">等待计算...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="plDrawer" class="drawer-panel">
+        <div class="flex items-center justify-between p-5 border-b border-white/5 shrink-0">
+            <div>
+                <h3 class="text-lg font-bold text-white mb-0.5">详细计算</h3>
+                <p class="text-[10px] text-gray-400">请选择方案查看损益表</p>
+            </div>
+            <button onclick="closeDrawer('plDrawer')" class="p-2 text-gray-400 hover:text-white rounded-md bg-white/5 hover:bg-white/10 transition-colors">&times;</button>
+        </div>
+        <div class="p-5 overflow-y-auto custom-scroll flex-grow">
+            <div id="plScenarioChips" class="flex flex-wrap gap-2 mb-6">
+                <span class="text-xs text-gray-500">等待计算...</span>
+            </div>
+            <div class="overflow-x-auto bg-black/20 rounded-xl border border-white/5 p-1">
+                <table class="w-full text-left border-collapse min-w-[400px]">
+                    <thead>
+                        <tr class="border-b border-white/5 text-[10px] text-gray-500 uppercase">
+                            <th class="py-3 px-4 font-medium">指标</th>
+                            <th class="py-3 px-4 font-medium text-right">金额，卢布</th>
+                            <th class="py-3 px-4 font-medium text-right w-16">%</th>
+                        </tr>
+                    </thead>
+                    <tbody id="plTableBody" class="text-xs divide-y divide-white/5 font-mono">
+                        <tr><td colspan="3" class="py-10 text-center text-gray-500 font-sans">等待计算...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="settingsModal" class="modal-overlay fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+        <div class="modal-content glass-card rounded-xl p-6 max-w-3xl w-full relative my-8 border border-white/10">
+            <button onclick="closeModal('settingsModal')" class="absolute top-3 right-3 text-gray-500 hover:text-white text-xl">&times;</button>
+            <div class="mb-5 border-b border-white/5 pb-3">
+                <h3 class="text-lg font-bold text-white mb-1">计算参数</h3>
+                <p class="text-[10px] text-gray-400">法规变化时用于更新税率和限额。</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 text-sm max-h-[60vh] overflow-y-auto pr-2 custom-scroll">
+                <div class="space-y-3">
+                    <h4 class="font-semibold text-gray-300 border-b border-white/5 pb-1 text-xs">税率</h4>
+                    <div><label class="block text-[10px] text-gray-400 mb-1">简化税制：收入 (%)</label><input type="number" id="p_usnD" value="6" step="0.1" class="gro-input w-full rounded px-2 py-1.5 text-right text-xs"></div>
+                    <div><label class="block text-[10px] text-gray-400 mb-1">简化税制：收入减费用 (%)</label><input type="number" id="p_usnDR" value="15" step="0.1" class="gro-input w-full rounded px-2 py-1.5 text-right text-xs"></div>
+                    <div><label class="block text-[10px] text-gray-400 mb-1">一般税制：利润税 (%)</label><input type="number" id="p_osnoProfit" value="25" step="0.1" class="gro-input w-full rounded px-2 py-1.5 text-right text-xs"></div>
+                    <div><label class="block text-[10px] text-gray-400 mb-1">自动简化税制：收入 (%)</label><input type="number" id="p_ausnD" value="8" step="0.1" class="gro-input w-full rounded px-2 py-1.5 text-right text-xs"></div>
+                    <div><label class="block text-[10px] text-gray-400 mb-1">自动简化税制：收入减费用 (%)</label><input type="number" id="p_ausnDR" value="20" step="0.1" class="gro-input w-full rounded px-2 py-1.5 text-right text-xs"></div>
+                </div>
+                <div class="space-y-3">
+                    <h4 class="font-semibold text-gray-300 border-b border-white/5 pb-1 text-xs">个体工商户缴费</h4>
+                    <div><label class="block text-[10px] text-gray-400 mb-1">固定部分（卢布）</label><input type="number" id="p_ipFix" value="57390" class="gro-input w-full rounded px-2 py-1.5 text-right text-xs"></div>
+                    <div><label class="block text-[10px] text-gray-400 mb-1">1% 起算门槛（卢布）</label><input type="number" id="p_ipVarThreshold" value="300000" class="gro-input w-full rounded px-2 py-1.5 text-right text-xs"></div>
+                    <div><label class="block text-[10px] text-gray-400 mb-1">1% 最高额（卢布）</label><input type="number" id="p_ipVarMax" value="321818" class="gro-input w-full rounded px-2 py-1.5 text-right text-xs"></div>
+                </div>
+                <div class="space-y-3">
+                    <h4 class="font-semibold text-gray-300 border-b border-white/5 pb-1 text-xs">增值税和限额</h4>
+                    <div><label class="block text-[10px] text-gray-400 mb-1">基础增值税率 (%)</label><input type="number" id="p_vatOsno" value="22" class="gro-input w-full rounded px-2 py-1.5 text-right text-xs"></div>
+                    <div><label class="block text-[10px] text-gray-400 mb-1">简化税制增值税 5%→7% 收入门槛</label><input type="number" id="p_vatThreshold" value="272500000" class="gro-input w-full rounded px-2 py-1.5 text-right text-xs"></div>
+                    <div><label class="block text-[10px] text-gray-400 mb-1">有限公司简化税制最高抵扣 (%)</label><input type="number" id="p_usnMaxDed" value="50" class="gro-input w-full rounded px-2 py-1.5 text-right text-xs"></div>
+                    <div class="pt-3"><button id="resetParamsBtn" class="w-full bg-white/5 hover:bg-white/10 text-gray-400 text-[10px] border border-white/10 rounded py-1.5 transition-colors">恢复默认值</button></div>
+                </div>
+            </div>
+            <div class="flex gap-3 mt-6 pt-4 border-t border-white/5">
+                <button onclick="closeModal('settingsModal')" class="px-4 py-2 rounded-md border border-white/10 text-gray-300 hover:bg-white/5 text-xs transition-colors">取消</button>
+                <button onclick="saveAndRecalculateSettings()" class="flex-1 py-2 rounded-md bg-gro-primary hover:bg-blue-700 text-white text-xs font-medium transition-colors">保存并重新计算</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="fixed left-1/2 -translate-x-1/2 bg-gray-800 text-white px-5 py-2.5 rounded-lg shadow-xl border border-gray-700 text-xs flex items-center gap-2 pointer-events-none">
+        <svg class="w-4 h-4 text-gro-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <span id="toastMessage">通知</span>
+    </div>
+
+    <script>
+        const API_BASE = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost'
+            ? 'http://127.0.0.1:3100'
+            : '';
+
+        async function sendLead(form) {
+            const formData = new FormData(form);
+            const fields = Object.fromEntries(formData.entries());
+            const response = await fetch(`${API_BASE}/api/lead`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    source: 'tax-calculator-zh',
+                    page: window.location.href,
+                    fields
+                })
+            });
+            if (!response.ok) throw new Error('lead-send-failed');
+            return response.json();
+        }
+
+        const DEFAULT_LAW_PARAMS = {
+            usnD_rate: 0.06, usnDR_rate: 0.15, usnDR_min_rate: 0.01,
+            ausnD_rate: 0.08, ausnDR_rate: 0.20, ausnDR_min_rate: 0.03,
+            osno_profit_rate: 0.25,
+            vat_usn_1: 0.05, vat_usn_2: 0.07, vat_threshold: 272500000, vat_osno: 0.22,
+            ip_fix_contrib: 57390, ip_var_threshold: 300000, ip_var_rate: 0.01, ip_var_max: 321818, ip_total_max: 379208,
+            usn_deduction_max_ooo: 0.50,
+            usn_vat0_max: 20000000,
+            usn_max: 490500000,
+            ausn_max: 60000000,
+            osno_vat0_max: 8000000 // OSNO VAT exemption threshold
+        };
+
+        let LAW_PARAMS = { ...DEFAULT_LAW_PARAMS };
+
+        const TAX_SCENARIOS = [
+            { id: 'usn_d_0', name: '简化税制“收入”', short: '简化收入', vatRate: 0, regime: 'USN_D' },
+            { id: 'usn_d_5', name: '简化税制“收入”', short: '简化收入 5%', vatRate: '5/7', regime: 'USN_D' },
+            { id: 'usn_d_22', name: '简化税制“收入”', short: '简化收入 22%', vatRate: 22, regime: 'USN_D' },
+            { id: 'usn_dr_0', name: '简化税制“收入减费用”', short: '简化差额', vatRate: 0, regime: 'USN_DR' },
+            { id: 'usn_dr_5', name: '简化税制“收入减费用”', short: '简化差额 5%', vatRate: '5/7', regime: 'USN_DR' },
+            { id: 'usn_dr_22', name: '简化税制“收入减费用”', short: '简化差额 22%', vatRate: 22, regime: 'USN_DR' },
+            { id: 'osno_0', name: '一般税制（无增值税）', short: '一般税制 0%', vatRate: 0, regime: 'OSNO' },
+            { id: 'osno_22', name: '一般税制', short: '一般税制 22%', vatRate: 22, regime: 'OSNO' },
+            { id: 'ausn_d_0', name: '自动简化税制“收入”', short: '自动简化收入', vatRate: 0, regime: 'AUSN_D' },
+            { id: 'ausn_dr_0', name: '自动简化税制“收入减费用”', short: '自动简化差额', vatRate: 0, regime: 'AUSN_DR' }
+        ];
+
+        let calculationResults = [];
+        let activePLScenarioId = 'usn_d_0';
+
+        const formatMoney = (val) => new Intl.NumberFormat('zh-CN', { style: 'decimal', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(val);
+        const formatPercent = (val) => (val * 100).toFixed(1) + '%';
+        const parseMoney = (str) => parseFloat(str.replace(/\s/g, '')) || 0;
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 4000);
+        }
+
+        const tooltipEl = document.getElementById('global-tooltip');
+        
+        function showTooltip(e) {
+            const target = e.target;
+            const text = target.getAttribute('data-tooltip');
+            if (!text) return;
+            
+            tooltipEl.textContent = text;
+            tooltipEl.classList.add('show');
+            
+            const rect = target.getBoundingClientRect();
+            const tooltipRect = tooltipEl.getBoundingClientRect();
+            
+            let top = rect.top - tooltipRect.height - 8;
+            let left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
+            
+            if (top < 10) top = rect.bottom + 8;
+            if (left < 10) left = 10;
+            if (left + tooltipRect.width > window.innerWidth - 10) {
+                left = window.innerWidth - tooltipRect.width - 10;
+            }
+            
+            tooltipEl.style.top = top + 'px';
+            tooltipEl.style.left = left + 'px';
+        }
+
+        function hideTooltip() { tooltipEl.classList.remove('show'); }
+
+        document.querySelectorAll('[data-tooltip]').forEach(icon => {
+            icon.addEventListener('mouseenter', showTooltip);
+            icon.addEventListener('focus', showTooltip);
+            icon.addEventListener('mouseleave', hideTooltip);
+            icon.addEventListener('blur', hideTooltip);
+            icon.addEventListener('click', (e) => {
+                e.preventDefault();
+                if(tooltipEl.classList.contains('show') && tooltipEl.textContent === icon.getAttribute('data-tooltip')) {
+                    hideTooltip();
+                } else {
+                    showTooltip(e);
+                }
+            });
+        });
+        
+        document.addEventListener('click', (e) => { if(!e.target.closest('[data-tooltip]')) hideTooltip(); });
+        document.addEventListener('keydown', (e) => { if(e.key === 'Escape') hideTooltip(); });
+
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+        
+        document.querySelectorAll('.modal-overlay').forEach(m => m.addEventListener('click', e => { if(e.target === m) closeModal(m.id); }));
+
+        function openDrawer(id) {
+            document.getElementById('drawerOverlay').classList.add('active');
+            document.getElementById(id).classList.add('active');
+            document.body.style.overflow = 'hidden';
+            if(calculationResults.length > 0 && id === 'plDrawer') {
+                renderPLChips();
+                renderPL(activePLScenarioId);
+            }
+        }
+        function closeDrawer(id) {
+            document.getElementById(id).classList.remove('active');
+            document.getElementById('drawerOverlay').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        function closeAllDrawers() {
+            document.querySelectorAll('.drawer-panel').forEach(d => d.classList.remove('active'));
+            document.getElementById('drawerOverlay').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        document.addEventListener('keydown', e => { 
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay.active').forEach(m => closeModal(m.id));
+                closeAllDrawers();
+            }
+        });
+
+        function saveAndRecalculateSettings() {
+            LAW_PARAMS.usnD_rate = parseFloat(document.getElementById('p_usnD').value) / 100;
+            LAW_PARAMS.usnDR_rate = parseFloat(document.getElementById('p_usnDR').value) / 100;
+            LAW_PARAMS.osno_profit_rate = parseFloat(document.getElementById('p_osnoProfit').value) / 100;
+            LAW_PARAMS.ausnD_rate = parseFloat(document.getElementById('p_ausnD').value) / 100;
+            LAW_PARAMS.ausnDR_rate = parseFloat(document.getElementById('p_ausnDR').value) / 100;
+            LAW_PARAMS.ip_fix_contrib = parseFloat(document.getElementById('p_ipFix').value);
+            LAW_PARAMS.ip_var_threshold = parseFloat(document.getElementById('p_ipVarThreshold').value);
+            LAW_PARAMS.ip_var_max = parseFloat(document.getElementById('p_ipVarMax').value);
+            LAW_PARAMS.vat_threshold = parseFloat(document.getElementById('p_vatThreshold').value);
+            LAW_PARAMS.vat_osno = parseFloat(document.getElementById('p_vatOsno').value) / 100;
+            LAW_PARAMS.usn_deduction_max_ooo = parseFloat(document.getElementById('p_usnMaxDed').value) / 100;
+            
+            // Sync scenario vat rate 22 to LAW_PARAMS
+            TAX_SCENARIOS.forEach(sc => { if(sc.vatRate === 22) sc.vatRate = LAW_PARAMS.vat_osno * 100; });
+            
+            calculateAll();
+            showToast('参数已重新计算');
+            closeModal('settingsModal');
+        }
+
+        function calculateNDFL(income) {
+            if (income <= 0) return 0;
+            if (income <= 2400000) return income * 0.13;
+            if (income <= 5000000) return 312000 + (income - 2400000) * 0.15;
+            if (income <= 20000000) return 702000 + (income - 5000000) * 0.18;
+            if (income <= 50000000) return 3402000 + (income - 20000000) * 0.20;
+            return 9402000 + (income - 50000000) * 0.22;
+        }
+
+        function calculateIpContributions(revenue) {
+            let varContrib = 0;
+            if (revenue > LAW_PARAMS.ip_var_threshold) {
+                varContrib = (revenue - LAW_PARAMS.ip_var_threshold) * LAW_PARAMS.ip_var_rate;
+                varContrib = Math.min(varContrib, LAW_PARAMS.ip_var_max);
+            }
+            return Math.min(LAW_PARAMS.ip_fix_contrib + varContrib, LAW_PARAMS.ip_total_max);
+        }
+
+        function calculateScenario(inputs, scenario) {
+            const { rev, varCost, varVatShare, fixedCost, fixedVatShare, empContrib, orgType } = inputs;
+            const res = { scenario, pnl: [], isDisabled: false };
+            
+            // Limits and exclusions
+            if (scenario.regime.startsWith('AUSN') && rev > LAW_PARAMS.ausn_max) {
+                res.isDisabled = true;
+            }
+            
+            if (scenario.regime.startsWith('USN')) {
+                if (rev > LAW_PARAMS.usn_max) {
+                    res.isDisabled = true; // USN is unavailable
+                } else if (scenario.vatRate === 0 && rev > LAW_PARAMS.usn_vat0_max) {
+                    res.isDisabled = true; // VAT is mandatory
+                } else if (scenario.vatRate !== 0 && rev <= LAW_PARAMS.usn_vat0_max) {
+                    res.isDisabled = true; // VAT exemption applies
+                } else if (scenario.vatRate === '5/7' && rev > LAW_PARAMS.vat_threshold) {
+                    res.isDisabled = true; // Above the 5% threshold
+                }
+            }
+            
+            if (scenario.regime === 'OSNO' && scenario.vatRate === 0 && rev > LAW_PARAMS.osno_vat0_max) {
+                res.isDisabled = true; // Article 145 annualized simplification
+            }
+            
+            const addPnlRow = (name, val) => res.pnl.push({ name, val, percent: rev > 0 ? (val / rev) : 0 });
+
+            const varCostVat = varCost * varVatShare; const varCostNoVat = varCost * (1 - varVatShare);
+            const fixedCostVat = fixedCost * fixedVatShare; const fixedCostNoVat = fixedCost * (1 - fixedVatShare);
+
+            let effRev = rev, effVarCostVat = varCostVat, effFixedCostVat = fixedCostVat, outVat = 0, inVat = 0;
+
+            if (scenario.vatRate === '5/7') {
+                effRev = (rev <= LAW_PARAMS.vat_threshold) 
+                    ? rev / (1 + LAW_PARAMS.vat_usn_1) 
+                    : LAW_PARAMS.vat_threshold / (1 + LAW_PARAMS.vat_usn_1) + (rev - LAW_PARAMS.vat_threshold) / (1 + LAW_PARAMS.vat_usn_2);
+                outVat = rev - effRev;
+            } else if (scenario.vatRate === LAW_PARAMS.vat_osno * 100 || scenario.vatRate === 22) { // Allow for dynamic 20/22
+                effRev = rev / (1 + LAW_PARAMS.vat_osno);
+                effVarCostVat = varCostVat / (1 + LAW_PARAMS.vat_osno);
+                effFixedCostVat = fixedCostVat / (1 + LAW_PARAMS.vat_osno);
+                outVat = rev - effRev;
+                inVat = (varCostVat - effVarCostVat) + (fixedCostVat - effFixedCostVat);
+            }
+
+            const vatToPay = Math.max(0, outVat - inVat);
+            const grossProfit = effRev - effVarCostVat - varCostNoVat;
+            const opProfit = grossProfit - effFixedCostVat - fixedCostNoVat;
+
+            addPnlRow('不含税收入（计税基础）', effRev);
+            addPnlRow('含增值税变动成本（不含税）', effVarCostVat);
+            addPnlRow('不含增值税变动成本', varCostNoVat);
+            addPnlRow('毛利润', grossProfit);
+            addPnlRow('含增值税固定费用（不含税）', effFixedCostVat);
+            addPnlRow('不含增值税固定费用', fixedCostNoVat);
+            addPnlRow('营业利润', opProfit);
+
+            let tax = 0;
+            const ipContribTotal = orgType === 'IP' ? calculateIpContributions(rev) : 0;
+            const totalDeductibleContrib = (orgType === 'IP' ? ipContribTotal : 0) + empContrib;
+
+            switch (scenario.regime) {
+                case 'USN_D':
+                    let deductionLimitPercent = LAW_PARAMS.usn_deduction_max_ooo; // 50%
+                    if (orgType === 'IP') {
+                        // 100% deduction without employees, 50% with employees
+                        deductionLimitPercent = empContrib > 0 ? 0.5 : 1.0;
+                    }
+                    tax = Math.max(0, (effRev * LAW_PARAMS.usnD_rate) - Math.min(totalDeductibleContrib, effRev * LAW_PARAMS.usnD_rate * deductionLimitPercent));
+                    break;
+                case 'USN_DR':
+                    tax = Math.max(Math.max(0, opProfit) * LAW_PARAMS.usnDR_rate, effRev * LAW_PARAMS.usnDR_min_rate);
+                    break;
+                case 'OSNO':
+                    tax = orgType === 'OOO' ? Math.max(0, opProfit * LAW_PARAMS.osno_profit_rate) : calculateNDFL(opProfit);
+                    break;
+                case 'AUSN_D':
+                    tax = rev > 0 ? effRev * LAW_PARAMS.ausnD_rate : 0;
+                    break;
+                case 'AUSN_DR':
+                    tax = Math.max(Math.max(0, opProfit) * LAW_PARAMS.ausnDR_rate, effRev * LAW_PARAMS.ausnDR_min_rate);
+                    break;
+            }
+
+            addPnlRow('税额', tax);
+            if (scenario.vatRate !== 0) {
+                addPnlRow('应缴增值税', vatToPay);
+                if(scenario.vatRate === LAW_PARAMS.vat_osno * 100 || scenario.vatRate === 22) addPnlRow('其中：进项增值税', inVat);
+                addPnlRow('其中：销项增值税', outVat);
+            }
+            if (orgType === 'IP') addPnlRow('个体工商户本人缴费', ipContribTotal);
+
+            let netProfit = opProfit - tax - (orgType === 'IP' ? ipContribTotal : 0);
+            addPnlRow('净利润', netProfit);
+
+            res.opProfit = opProfit; res.tax = tax; res.vatToPay = vatToPay; res.netProfit = netProfit;
+            res.taxBurden = rev > 0 ? ((tax + vatToPay + (orgType === 'IP' ? ipContribTotal : 0) + empContrib) / rev) : 0;
+            return res;
+        }
+
+        function calculateAll() {
+            const revInput = document.getElementById('revenue').value;
+            const varCostInput = document.getElementById('varCosts').value;
+            const fixedCostInput = document.getElementById('fixedCosts').value;
+            const empContribInput = document.getElementById('empContrib').value;
+
+            const rev = parseMoney(revInput);
+            const varCost = parseMoney(varCostInput);
+            const fixedCost = parseMoney(fixedCostInput);
+            const empContrib = parseMoney(empContribInput);
+            
+            const varVatShare = parseFloat(document.getElementById('varVatShare').value) / 100;
+            const fixedVatShare = parseFloat(document.getElementById('fixedVatShare').value) / 100;
+            const orgType = document.querySelector('input[name="orgType"]:checked').value;
+
+            const isDataEntered = (rev > 0 || varCost > 0 || fixedCost > 0);
+
+            if (!isDataEntered) {
+                renderEmptyStates();
+                return;
+            }
+
+            calculationResults = TAX_SCENARIOS
+                .map(sc => calculateScenario({ rev, varCost, varVatShare, fixedCost, fixedVatShare, empContrib, orgType }, sc))
+                .filter(res => !res.isDisabled);
+            
+            if (calculationResults.length > 0 && !calculationResults.some(r => r.scenario.id === activePLScenarioId)) {
+                activePLScenarioId = calculationResults[0].scenario.id;
+            }
+            
+            renderResults();
+            
+            if(document.getElementById('plDrawer').classList.contains('active')) {
+                renderPLChips();
+                renderPL(activePLScenarioId);
+            }
+        }
+
+        function renderEmptyStates() {
+            document.getElementById('bestRegimeName').textContent = '请输入业务参数';
+            document.getElementById('bestRegimeDesc').textContent = '—';
+            const netEl = document.getElementById('bestNetProfit');
+            netEl.textContent = '—';
+            netEl.className = 'text-xl font-bold text-gray-500 font-mono leading-none mb-1';
+            document.getElementById('bestTaxBurden').textContent = '—';
+
+            const chartCont = document.getElementById('horizontalChartContainer');
+            chartCont.innerHTML = `
+                <div class="absolute inset-0 flex items-center justify-center text-xs text-gray-500 z-10">图表将自动更新</div>
+                <div class="h-5 bg-white/5 rounded w-full opacity-30"></div>
+                <div class="h-5 bg-white/5 rounded w-3/4 opacity-30"></div>
+                <div class="h-5 bg-white/5 rounded w-1/2 opacity-30"></div>
+                <div class="h-5 bg-white/5 rounded w-1/3 opacity-30"></div>
+            `;
+
+            document.getElementById('topScenariosList').innerHTML = `<div class="text-xs text-gray-500 py-2 text-center border border-dashed border-white/10 rounded">输入数据后，这里会显示最佳方案。</div>`;
+            
+            document.getElementById('resultsTableBody').innerHTML = `<tr><td colspan="5" class="py-10 text-center text-gray-500">等待计算...</td></tr>`;
+            document.getElementById('plScenarioChips').innerHTML = `<span class="text-xs text-gray-500">等待计算...</span>`;
+            document.getElementById('plTableBody').innerHTML = `<tr><td colspan="3" class="py-10 text-center text-gray-500 font-sans">等待计算...</td></tr>`;
+        }
+
+        function renderResults() {
+            let bestIndex = 0; let maxProfit = -Infinity;
+            calculationResults.forEach((res, idx) => { if (res.netProfit > maxProfit) { maxProfit = res.netProfit; bestIndex = idx; } });
+            
+            const bestRes = calculationResults[bestIndex];
+            
+            document.getElementById('bestRegimeName').textContent = bestRes.scenario.name + (bestRes.scenario.vatRate ? ` (增值税 ${bestRes.scenario.vatRate}%)` : '');
+            document.getElementById('bestRegimeDesc').textContent = '按输入数据预计净利润最高。';
+            const netEl = document.getElementById('bestNetProfit');
+            netEl.textContent = formatMoney(bestRes.netProfit) + ' ₽';
+            netEl.className = `text-xl font-bold font-mono leading-none mb-1 ${bestRes.netProfit >= 0 ? 'text-white' : 'text-red-400'}`;
+            document.getElementById('bestTaxBurden').textContent = formatPercent(bestRes.taxBurden);
+
+            const sortedResults = [...calculationResults].sort((a, b) => b.netProfit - a.netProfit);
+            
+            renderHorizontalChart(sortedResults);
+            renderTopScenarios(sortedResults);
+            renderFullTable(bestIndex); 
+        }
+
+        function renderHorizontalChart(sortedResults) {
+            const container = document.getElementById('horizontalChartContainer');
+            container.innerHTML = '';
+            
+            const chartData = sortedResults.slice(0, 5); // Show top 5 for compactness
+            const maxAbsProfit = Math.max(...chartData.map(r => Math.abs(r.netProfit)), 1);
+
+            chartData.forEach((res, idx) => {
+                const isBest = idx === 0;
+                const isPositive = res.netProfit >= 0;
+                const widthPercent = Math.max((Math.abs(res.netProfit) / maxAbsProfit) * 100, 1);
+                
+                const row = document.createElement('div');
+                row.className = 'flex items-center gap-2 text-[11px] sm:text-xs w-full';
+                
+                const label = document.createElement('div');
+                label.className = `w-20 sm:w-24 flex-shrink-0 text-right truncate ${isBest ? 'text-gro-teal font-medium' : 'text-gray-400'}`;
+                label.textContent = res.scenario.short;
+                label.title = res.scenario.name;
+
+                const barWrapper = document.createElement('div');
+                barWrapper.className = 'flex-grow h-6 bg-white/5 rounded overflow-hidden relative';
+
+                const bar = document.createElement('div');
+                bar.className = `h-full chart-bar-horizontal ${isBest ? 'bg-gro-teal shadow-glow-teal' : (isPositive ? 'bg-gro-primary' : 'bg-red-900/60')}`;
+                bar.style.width = `${widthPercent}%`;
+                barWrapper.appendChild(bar);
+
+                const valueLabel = document.createElement('div');
+                valueLabel.className = `w-20 sm:w-24 flex-shrink-0 text-right font-mono font-medium ${isBest ? 'text-gro-teal' : (isPositive ? 'text-white' : 'text-red-400')}`;
+                valueLabel.textContent = formatMoney(res.netProfit) + ' ₽';
+                
+                row.appendChild(label);
+                row.appendChild(barWrapper);
+                row.appendChild(valueLabel);
+                container.appendChild(row);
+            });
+        }
+
+        function renderTopScenarios(sortedResults) {
+            const container = document.getElementById('topScenariosList');
+            container.innerHTML = '';
+            
+            sortedResults.slice(0, 3).forEach((res, idx) => {
+                const row = document.createElement('div');
+                row.className = 'flex justify-between items-center p-2.5 rounded bg-white/5 border border-white/5 text-[11px] sm:text-xs';
+                row.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <span class="font-medium text-gray-200">${res.scenario.name}</span>
+                        <span class="text-gray-500">增值税 ${res.scenario.vatRate === 0 ? '0' : res.scenario.vatRate}%</span>
+                        ${idx === 0 ? '<span class="px-1.5 py-0.5 bg-gro-teal/20 text-gro-teal rounded-[4px] text-[9px] uppercase tracking-wider font-semibold">推荐</span>' : ''}
+                    </div>
+                    <div class="font-mono font-medium ${res.netProfit >= 0 ? (idx === 0 ? 'text-gro-teal' : 'text-white') : 'text-red-400'}">
+                        ${formatMoney(res.netProfit)} ₽
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        function renderFullTable(bestIndex) {
+            const tbody = document.getElementById('resultsTableBody');
+            tbody.innerHTML = '';
+            
+            calculationResults.forEach((res, idx) => {
+                const isBest = idx === bestIndex;
+                const tr = document.createElement('tr');
+                tr.className = `table-row-hover transition-colors ${isBest ? 'best-scenario-row bg-gro-teal/10' : ''}`;
+                
+                tr.innerHTML = `
+                    <td class="py-2.5 px-4 relative">
+                        <div class="font-medium ${isBest ? 'text-white' : 'text-gray-300'}">${res.scenario.name}</div>
+                        <div class="text-[10px] text-gray-500">增值税: ${res.scenario.vatRate === 0 ? '无增值税' : res.scenario.vatRate + '%'}</div>
+                        ${isBest ? '<div class="absolute -left-[1px] top-1/2 -translate-y-1/2 w-[3px] h-full bg-gro-teal"></div>' : ''}
+                    </td>
+                    <td class="py-2.5 px-4 text-right font-mono text-gray-300">${formatMoney(res.tax)}</td>
+                    <td class="py-2.5 px-4 text-right font-mono text-gray-400">${res.vatToPay > 0 ? formatMoney(res.vatToPay) : '—'}</td>
+                    <td class="py-2.5 px-4 text-right font-mono font-medium ${res.netProfit >= 0 ? (isBest ? 'text-gro-teal' : 'text-white') : 'text-red-400'}">${formatMoney(res.netProfit)}</td>
+                    <td class="py-2.5 px-4 text-center font-mono text-[10px] ${res.taxBurden > 0.5 ? 'text-red-400' : 'text-gray-400'}">
+                        ${formatPercent(res.taxBurden)}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderPLChips() {
+            const container = document.getElementById('plScenarioChips');
+            container.innerHTML = '';
+            calculationResults.forEach(res => {
+                const sc = res.scenario;
+                const btn = document.createElement('button');
+                const isActive = sc.id === activePLScenarioId;
+                btn.className = `px-3 py-1.5 rounded-md text-[11px] transition-colors border ${isActive ? 'bg-gro-accent/20 border-gro-accent text-white font-medium' : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10 hover:text-gray-200'}`;
+                btn.textContent = sc.short;
+                btn.onclick = () => {
+                    activePLScenarioId = sc.id;
+                    renderPLChips(); 
+                    renderPL(sc.id);
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        function renderPL(scenarioId) {
+            const tbody = document.getElementById('plTableBody');
+            const res = calculationResults.find(r => r.scenario.id === scenarioId);
+            if(!res) return;
+
+            tbody.innerHTML = '';
+            res.pnl.forEach(row => {
+                const isImportant = row.name === '营业利润' || row.name === '净利润';
+                const isTax = row.name.includes('税额') || row.name.includes('应缴增值税');
+                
+                const tr = document.createElement('tr');
+                if(isImportant) tr.className = 'border-t border-white/10 bg-white/5';
+                
+                tr.innerHTML = `
+                    <td class="py-2.5 px-3 ${isImportant ? 'font-medium text-white' : (isTax ? 'text-yellow-100/60' : 'text-gray-400')}">${row.name}</td>
+                    <td class="py-2.5 px-3 text-right ${isImportant ? 'font-medium text-white' : ''} ${row.val < 0 ? 'text-red-400' : ''}">${formatMoney(row.val)}</td>
+                    <td class="py-2.5 px-3 text-right text-gray-500 text-[10px]">${formatPercent(row.percent)}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        const debouncedCalculateAll = debounce(calculateAll, 300);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderEmptyStates();
+
+            document.querySelectorAll('input[data-type="currency"]').forEach(input => {
+                input.addEventListener('input', function(e) {
+                    let value = this.value.replace(/[^\d]/g, '');
+                    if(value) {
+                        let cursorPostion = this.selectionStart;
+                        let oldLength = this.value.length;
+                        
+                        this.value = formatMoney(parseInt(value));
+                        
+                        let newLength = this.value.length;
+                        cursorPostion += (newLength - oldLength);
+                        this.setSelectionRange(cursorPostion, cursorPostion);
+                    }
+                });
+            });
+
+            const linkSlider = (sliderId, valId) => {
+                const slider = document.getElementById(sliderId);
+                const val = document.getElementById(valId);
+                slider.addEventListener('input', (e) => { val.textContent = e.target.value + '%'; });
+            };
+            linkSlider('varVatShare', 'varVatShareVal');
+            linkSlider('fixedVatShare', 'fixedVatShareVal');
+
+            document.querySelectorAll('.calc-trigger').forEach(input => {
+                if(input.type === 'range' || input.type === 'radio') {
+                    input.addEventListener('change', calculateAll);
+                    input.addEventListener('input', calculateAll);
+                } else {
+                    input.addEventListener('input', debouncedCalculateAll);
+                }
+            });
+
+            document.getElementById('manualCalculateBtn').addEventListener('click', () => {
+                calculateAll();
+                if(window.innerWidth < 1024) document.getElementById('bestRegimeName').scrollIntoView({behavior: 'smooth', block: 'center'});
+            });
+
+            document.getElementById('resetParamsBtn').addEventListener('click', () => {
+                LAW_PARAMS = { ...DEFAULT_LAW_PARAMS };
+                document.getElementById('p_usnD').value = LAW_PARAMS.usnD_rate * 100;
+                document.getElementById('p_usnDR').value = LAW_PARAMS.usnDR_rate * 100;
+                document.getElementById('p_osnoProfit').value = LAW_PARAMS.osno_profit_rate * 100;
+                document.getElementById('p_ausnD').value = LAW_PARAMS.ausnD_rate * 100;
+                document.getElementById('p_ausnDR').value = LAW_PARAMS.ausnDR_rate * 100;
+                document.getElementById('p_ipFix').value = LAW_PARAMS.ip_fix_contrib;
+                document.getElementById('p_ipVarThreshold').value = LAW_PARAMS.ip_var_threshold;
+                document.getElementById('p_ipVarMax').value = LAW_PARAMS.ip_var_max;
+                document.getElementById('p_vatThreshold').value = LAW_PARAMS.vat_threshold;
+                document.getElementById('p_vatOsno').value = LAW_PARAMS.vat_osno * 100;
+                document.getElementById('p_usnMaxDed').value = LAW_PARAMS.usn_deduction_max_ooo * 100;
+                showToast('默认值已恢复。请点击保存。');
+            });
+
+            document.getElementById('fillExampleBtn').addEventListener('click', () => {
+                document.getElementById('orgOOO').checked = true;
+                const triggerInput = (id, val) => { const el = document.getElementById(id); el.value = val; el.dispatchEvent(new Event('input')); };
+                
+                triggerInput('revenue', '40000000'); 
+                triggerInput('varCosts', '30000000');
+                document.getElementById('varVatShare').value = '80'; document.getElementById('varVatShareVal').textContent = '80%';
+                triggerInput('fixedCosts', '6000000');
+                document.getElementById('fixedVatShare').value = '0'; document.getElementById('fixedVatShareVal').textContent = '0%';
+                triggerInput('empContrib', '1000000');
+                
+                calculateAll();
+                showToast('示例数据已载入');
+                if(window.innerWidth < 1024) document.getElementById('bestRegimeName').scrollIntoView({behavior: 'smooth', block: 'center'});
+            });
+
+            document.getElementById('leadForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const form = e.target;
+                const button = form.querySelector('button[type="submit"]');
+                const originalText = button.innerHTML;
+                button.disabled = true;
+                button.innerHTML = '正在发送...';
+                try {
+                    await sendLead(form);
+                    showToast('申请已发送');
+                    form.reset();
+                } catch (error) {
+                    showToast('申请发送失败。请通过 Telegram 或 WhatsApp 联系我们。');
+                } finally {
+                    button.disabled = false;
+                    button.innerHTML = originalText;
+                }
+            });
+        });
+    </script>
+    <div class="source-note">计算结果仅供参考，不能替代个别咨询。选择税制前请确认业务类型、地区税率、员工、增值税、专利税制及其他具体情况。</div>
+    <script>
+      (() => {
+        const key = "gro-theme-v2";
+        const applyTheme = (theme) => {
+          document.body.classList.toggle("light-theme", theme === "light");
+          document.querySelectorAll("[data-theme-toggle]").forEach((button) => {
+            button.setAttribute("aria-label", theme === "light" ? "切换夜间主题" : "切换日间主题");
+          });
+        };
+        try { applyTheme(localStorage.getItem(key) || "dark"); } catch (error) { applyTheme("dark"); }
+        window.addEventListener("DOMContentLoaded", () => {
+          if (window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost") {
+            document.querySelectorAll("[data-local-href]").forEach((link) => {
+              link.href = link.dataset.localHref;
+            });
+          }
+          document.querySelectorAll("[data-theme-toggle]").forEach((button) => {
+            button.addEventListener("click", () => {
+              const next = document.body.classList.contains("light-theme") ? "dark" : "light";
+              try { localStorage.setItem(key, next); } catch (error) {}
+              applyTheme(next);
+            });
+          });
+          const ribbon = document.querySelector(".gro-ribbon");
+          if (ribbon) {
+            const moveRibbon = () => {
+              const shiftY = Math.min(190, window.scrollY * 0.13);
+              const shiftX = Math.sin(window.scrollY / 170) * 30;
+              ribbon.style.setProperty("--ribbon-y", `${shiftY}px`);
+              ribbon.style.setProperty("--ribbon-x", `${shiftX}px`);
+            };
+            moveRibbon();
+            window.addEventListener("scroll", moveRibbon, { passive: true });
+          }
+        });
+      })();
+    </script>
+
+</body>
+</html>

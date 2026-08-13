@@ -159,6 +159,56 @@
             color: rgba(255, 255, 255, 0.3);
         }
 
+        .lead-modal-panel {
+            background:
+                radial-gradient(circle at 88% 0%, rgba(59, 130, 246, 0.18), transparent 34%),
+                linear-gradient(135deg, rgba(7, 11, 20, 0.98), rgba(9, 18, 36, 0.98));
+            color: #f8fafc;
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .lead-modal-title {
+            color: #f8fafc;
+        }
+
+        .lead-modal-label {
+            color: rgba(226, 232, 240, 0.9);
+            font-weight: 700;
+        }
+
+        .lead-modal-help {
+            color: rgba(203, 213, 225, 0.82);
+        }
+
+        .lead-modal-input {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(148, 163, 184, 0.34);
+            color: #f8fafc;
+            transition: all 0.25s ease;
+        }
+
+        .lead-modal-input:focus {
+            outline: none;
+            border-color: rgba(59, 130, 246, 0.9);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.16);
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .lead-modal-input::placeholder {
+            color: rgba(203, 213, 225, 0.66);
+        }
+
+        .lead-modal-close {
+            color: rgba(226, 232, 240, 0.75);
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .lead-modal-close:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
         /* --- СТИЛИ КАЛЬКУЛЯТОРА --- */
         .step-container {
             transition: opacity 0.4s ease, transform 0.4s ease;
@@ -440,6 +490,55 @@
             color: rgba(11, 18, 32, 0.4);
         }
 
+        body.light-theme .lead-modal-panel {
+            background:
+                radial-gradient(circle at 88% 0%, rgba(59, 130, 246, 0.14), transparent 34%),
+                linear-gradient(135deg, rgba(248, 251, 255, 0.99), rgba(232, 240, 255, 0.98));
+            color: #0b1220;
+            border-color: rgba(27, 54, 113, 0.14);
+            box-shadow: 0 28px 90px rgba(27, 54, 113, 0.22);
+        }
+
+        body.light-theme .lead-modal-title {
+            color: #0b1220 !important;
+        }
+
+        body.light-theme .lead-modal-label {
+            color: #24324a !important;
+        }
+
+        body.light-theme .lead-modal-help {
+            color: #465875 !important;
+        }
+
+        body.light-theme .lead-modal-input {
+            background: rgba(255, 255, 255, 0.96);
+            border-color: rgba(27, 54, 113, 0.2);
+            color: #0b1220;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95);
+        }
+
+        body.light-theme .lead-modal-input:focus {
+            border-color: rgba(37, 99, 235, 0.86);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.14);
+            background: #fff;
+        }
+
+        body.light-theme .lead-modal-input::placeholder {
+            color: rgba(51, 65, 85, 0.58);
+        }
+
+        body.light-theme .lead-modal-close {
+            color: #475569;
+            background: rgba(255, 255, 255, 0.72);
+            border-color: rgba(27, 54, 113, 0.12);
+        }
+
+        body.light-theme .lead-modal-close:hover {
+            color: #0b1220;
+            background: #fff;
+        }
+
         body.light-theme .theme-toggle .sun-icon { display: block; }
         body.light-theme .theme-toggle .moon-icon { display: none; }
     </style>
@@ -490,7 +589,7 @@
                 
                 <!-- ЛОГОТИП -->
                 <div class="flex-shrink-0 flex items-center relative h-10 w-48">
-                    <a href="#" class="absolute inset-0 flex items-center">
+                    <a href="/" class="absolute inset-0 flex items-center">
                         <!-- ТЗ: Путь assets/logo.png -->
                         <img src="assets/logo.png" alt="GRO Consulting" 
                              class="h-8 w-auto brightness-0 invert transition-all duration-300"
@@ -523,9 +622,9 @@
                         </button>
                     </div>
 
-                    <a href="#payment" class="bg-gro-accent text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-blue-600 transition-all shadow-neon hover:shadow-neon-hover">
-                        Оплатить услугу
-                    </a>
+                    <button type="button" onclick="openLeadModal('Консультация по услугам', '')" class="bg-gro-accent text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-blue-600 transition-all shadow-neon hover:shadow-neon-hover">
+                        Оставить заявку
+                    </button>
                 </div>
 
                 <div class="xl:hidden flex items-center gap-3">
@@ -563,9 +662,9 @@
                         <a href="#tariff-calculator" class="bg-gro-accent text-white px-8 py-4 rounded-xl text-base font-semibold hover:bg-blue-600 transition-all shadow-neon hover:shadow-neon-hover text-center flex items-center justify-center">
                             Подобрать тариф за 1 минуту
                         </a>
-                        <a href="#payment" class="glass-panel text-white hover:bg-white/10 px-8 py-4 rounded-xl text-base font-semibold transition-all text-center flex items-center justify-center">
-                            Оплатить услугу
-                        </a>
+                        <button type="button" onclick="openLeadModal('Консультация по услугам', '')" class="glass-panel text-white hover:bg-white/10 px-8 py-4 rounded-xl text-base font-semibold transition-all text-center flex items-center justify-center">
+                            Оставить заявку
+                        </button>
                     </div>
                 </div>
                 
@@ -628,7 +727,7 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <a href="https://checking.gro-consult.ru/" class="tools-card glass-panel rounded-2xl p-7 hover:bg-white/5 transition-all group relative overflow-hidden flex flex-col justify-between">
+                <a href="https://checking.gro-consult.ru/" data-local-href="http://127.0.0.1:4301/" class="tools-card glass-panel rounded-2xl p-7 hover:bg-white/5 transition-all group relative overflow-hidden flex flex-col justify-between">
                     <div class="absolute -right-16 -bottom-16 w-44 h-44 bg-gro-accent/15 rounded-full blur-3xl group-hover:bg-gro-accent/25 transition-all"></div>
                     <div>
                         <div class="w-12 h-12 rounded-xl border border-gro-accent/30 bg-gro-accent/10 flex items-center justify-center mb-7 text-gro-accent shadow-neon">
@@ -645,7 +744,7 @@
                     </div>
                 </a>
 
-                <a href="https://currency.gro-consult.ru/" class="tools-card glass-panel rounded-2xl p-7 hover:bg-white/5 transition-all group relative overflow-hidden flex flex-col justify-between">
+                <a href="https://currency.gro-consult.ru/" data-local-href="http://127.0.0.1:4302/" class="tools-card glass-panel rounded-2xl p-7 hover:bg-white/5 transition-all group relative overflow-hidden flex flex-col justify-between">
                     <div class="absolute -right-16 -bottom-16 w-44 h-44 bg-violet-500/15 rounded-full blur-3xl group-hover:bg-violet-500/25 transition-all"></div>
                     <div>
                         <div class="w-12 h-12 rounded-xl border border-gro-accent/30 bg-gro-accent/10 flex items-center justify-center mb-7 text-gro-accent shadow-neon">
@@ -662,19 +761,19 @@
                     </div>
                 </a>
 
-                <a href="#tariff-calculator" class="tools-card glass-panel rounded-2xl p-7 hover:bg-white/5 transition-all group relative overflow-hidden flex flex-col justify-between">
+                <a href="https://gro-consult.ru/tax/" data-local-href="http://127.0.0.1:4303/" class="tools-card glass-panel rounded-2xl p-7 hover:bg-white/5 transition-all group relative overflow-hidden flex flex-col justify-between">
                     <div class="absolute -right-16 -bottom-16 w-44 h-44 bg-gro-teal/15 rounded-full blur-3xl group-hover:bg-gro-teal/25 transition-all"></div>
                     <div>
                         <div class="w-12 h-12 rounded-xl border border-gro-accent/30 bg-gro-accent/10 flex items-center justify-center mb-7 text-gro-accent shadow-neon">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M9 7h6m-6 4h6m-7 8h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                         </div>
-                        <h3 class="text-2xl font-bold text-white mb-3">Налоговый режим</h3>
+                        <h3 class="text-2xl font-bold text-white mb-3">Калькулятор налогового режима</h3>
                         <p class="text-gray-400 leading-relaxed">
-                            Следующий инструмент: подбор режима по форме бизнеса, доходам, расходам и сотрудникам.
+                            Сравните УСН, ОСНО и АУСН по выручке, расходам, НДС и взносам. Инструмент покажет ориентировочную налоговую нагрузку и чистую прибыль.
                         </p>
                     </div>
                     <div class="mt-8 flex items-center justify-between text-sm font-semibold text-gro-accent">
-                        <span>Скоро</span>
+                        <span>Рассчитать</span>
                         <span class="text-gray-500">tax</span>
                     </div>
                 </a>
@@ -747,16 +846,22 @@
                 <!-- Декоративное свечение -->
                 <div class="absolute -inset-1 bg-gradient-to-r from-gro-accent/40 to-gro-blue/40 rounded-3xl blur-xl opacity-30 group-hover:opacity-50 transition duration-500 pointer-events-none"></div>
                 
-                <!-- Контейнер видео -->
+                <!-- Временная заглушка видео -->
                 <div class="glass-panel rounded-2xl p-2 sm:p-4 relative border border-white/10 shadow-2xl overflow-hidden bg-[#0a0f1a]/80">
-                    <div style="position: relative; padding-top: 56.72%; width: 100%; border-radius: 0.5rem; overflow: hidden; background-color: #000;">
-                        <iframe
-                            src="https://kinescope.io/embed/75ziaHSdFe34gwAMMUHBRA"
-                            allow="autoplay; fullscreen; picture-in-picture; encrypted-media; gyroscope; accelerometer; clipboard-write; screen-wake-lock;"
-                            frameborder="0"
-                            allowfullscreen
-                            style="position: absolute; width: 100%; height: 100%; top: 0; left: 0;">
-                        </iframe>
+                    <div class="aspect-video rounded-xl overflow-hidden bg-gradient-to-br from-[#071225] via-[#0b1530] to-[#03050a] border border-white/10 flex flex-col items-center justify-center text-center px-6 relative">
+                        <div class="absolute inset-0 opacity-70 pointer-events-none">
+                            <div class="absolute -left-24 top-1/3 w-[120%] h-24 bg-gro-accent/20 blur-3xl rotate-[-8deg]"></div>
+                            <div class="absolute right-0 bottom-10 w-64 h-64 bg-gro-blue/20 rounded-full blur-3xl"></div>
+                        </div>
+                        <div class="relative z-10">
+                            <div class="text-2xl sm:text-3xl font-black tracking-tight text-white mb-4">
+                                GRO<span class="text-gro-accent">CONSULTING</span>
+                            </div>
+                            <p class="text-xl sm:text-2xl font-bold text-white mb-2">Видео скоро появится</p>
+                            <p class="text-sm sm:text-base text-gray-400 max-w-xl mx-auto">
+                                Готовим короткое знакомство с подходом компании. Пока все услуги и тарифы доступны на странице.
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -885,7 +990,7 @@
                     </div>
                     
                     <div class="space-y-4">
-                        <div class="glass-panel p-5 rounded-xl flex items-center justify-between group hover:bg-white/5 transition-all cursor-pointer" onclick="showToast('Заявка: Регистрация ИП')">
+                        <div class="glass-panel p-5 rounded-xl flex items-center justify-between group hover:bg-white/5 transition-all cursor-pointer" onclick="openLeadModal('Регистрация ИП')">
                             <div>
                                 <h4 class="text-white font-medium text-lg">Регистрация ИП</h4>
                                 <p class="text-sm text-gray-500 mt-1">подготовка документов и подача в ФНС</p>
@@ -895,7 +1000,7 @@
                             </div>
                         </div>
                         
-                        <div class="glass-panel p-5 rounded-xl flex items-center justify-between group hover:bg-white/5 transition-all cursor-pointer" onclick="showToast('Заявка: Регистрация ООО')">
+                        <div class="glass-panel p-5 rounded-xl flex items-center justify-between group hover:bg-white/5 transition-all cursor-pointer" onclick="openLeadModal('Регистрация ООО')">
                             <div>
                                 <h4 class="text-white font-medium text-lg">Регистрация ООО</h4>
                                 <p class="text-sm text-gray-500 mt-1">устав, решения, подбор ОКВЭД</p>
@@ -905,7 +1010,7 @@
                             </div>
                         </div>
 
-                        <div class="glass-panel p-5 rounded-xl flex items-center justify-between group hover:bg-white/5 transition-all cursor-pointer" onclick="showToast('Заявка: Внесение изменений')">
+                        <div class="glass-panel p-5 rounded-xl flex items-center justify-between group hover:bg-white/5 transition-all cursor-pointer" onclick="openLeadModal('Внесение изменений')">
                             <div>
                                 <h4 class="text-white font-medium text-lg">Внесение изменений</h4>
                                 <p class="text-sm text-gray-500 mt-1">смена директора, адреса, ОКВЭД</p>
@@ -915,7 +1020,7 @@
                             </div>
                         </div>
 
-                        <div class="glass-panel border-gro-accent/30 p-5 rounded-xl flex items-center justify-between group hover:bg-gro-accent/10 transition-all cursor-pointer" onclick="showToast('Заявка: Открытие счета')">
+                        <div class="glass-panel border-gro-accent/30 p-5 rounded-xl flex items-center justify-between group hover:bg-gro-accent/10 transition-all cursor-pointer" onclick="openLeadModal('Открытие расчетного счета')">
                             <div>
                                 <h4 class="text-white font-medium text-lg">Открытие расчетного счета</h4>
                                 <p class="text-sm text-gray-500 mt-1">помощь в выборе банка-партнера</p>
@@ -951,7 +1056,7 @@
                         </div>
                     </div>
                     
-                    <button onclick="showToast('Заявка на подключение ЭДО')" class="w-full glass-panel border border-gro-accent text-white px-6 py-4 rounded-xl text-sm font-bold hover:bg-gro-accent/20 transition-all shadow-neon">
+                    <button onclick="openLeadModal('Подключение ЭДО')" class="w-full glass-panel border border-gro-accent text-white px-6 py-4 rounded-xl text-sm font-bold hover:bg-gro-accent/20 transition-all shadow-neon">
                         Оставить заявку на подключение
                     </button>
                 </div>
@@ -1044,40 +1149,55 @@
                         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                     </div>
                     <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Оплата услуг онлайн</h2>
-                    <p class="text-gray-400 max-w-xl mx-auto">Безопасный шлюз для быстрой оплаты бухгалтерских и юридических услуг. Данные защищены по стандарту PCI DSS.</p>
+                    <p class="text-gray-400 max-w-xl mx-auto">Готовим подключение безопасной оплаты на сайте. Сейчас можно оставить данные для счета - мы свяжемся в Telegram или по e-mail.</p>
                 </div>
 
-                <form onsubmit="handleFormSubmit(event, 'Оплата инициирована')" class="space-y-6 relative z-10">
+                <div class="relative z-10 mb-8 rounded-2xl border border-gro-accent/30 bg-gro-accent/10 px-5 py-4 text-sm text-blue-100">
+                    <div class="font-semibold text-white mb-1">Форма оплаты временно в настройке</div>
+                    <div class="text-gray-300">Платежи с карты пока не списываются. Заявка нужна только для подготовки счета.</div>
+                </div>
+
+                <form onsubmit="handleLeadSubmit(event, 'payment', 'Заявка на счет отправлена')" class="space-y-6 relative z-10">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="block text-sm font-medium mb-2 text-gray-300">сумма платежа (₽) *</label>
-                            <input type="number" required min="1" placeholder="0.00" class="w-full dark-input rounded-xl px-5 py-4 font-mono text-lg">
+                            <input type="number" name="Сумма" required min="1" placeholder="0.00" class="w-full dark-input rounded-xl px-5 py-4 font-mono text-lg">
                         </div>
                         <div>
                             <label class="block text-sm font-medium mb-2 text-gray-300">телефон *</label>
-                            <input type="tel" required placeholder="+7 (___) ___-__-__" class="w-full dark-input rounded-xl px-5 py-4 text-base">
+                            <input type="tel" name="Телефон" required placeholder="+7 (___) ___-__-__" class="w-full dark-input rounded-xl px-5 py-4 text-base">
                         </div>
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium mb-2 text-gray-300">назначение платежа *</label>
-                        <input type="text" required placeholder="Введите номер счёта и наименование услуги" class="w-full dark-input rounded-xl px-5 py-4 text-base">
+                        <input type="text" name="Назначение платежа" required placeholder="Введите номер счёта и наименование услуги" class="w-full dark-input rounded-xl px-5 py-4 text-base">
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="block text-sm font-medium mb-2 text-gray-300">имя или название компании *</label>
-                            <input type="text" required placeholder="ООО «Компания» или Иванов И.И." class="w-full dark-input rounded-xl px-5 py-4 text-base">
+                            <input type="text" name="Имя или компания" required placeholder="ООО «Компания» или Иванов И.И." class="w-full dark-input rounded-xl px-5 py-4 text-base">
                         </div>
                         <div>
                             <label class="block text-sm font-medium mb-2 text-gray-300">e-mail (для чека)</label>
-                            <input type="email" placeholder="mail@example.com" class="w-full dark-input rounded-xl px-5 py-4 text-base">
+                            <input type="email" name="E-mail" placeholder="mail@example.com" class="w-full dark-input rounded-xl px-5 py-4 text-base">
                         </div>
                     </div>
 
-                    <div class="pt-6">
+                    <label class="flex gap-3 text-left text-xs sm:text-sm text-gray-400 leading-relaxed">
+                        <input type="checkbox" required class="mt-1 h-4 w-4 rounded border-white/20 bg-white/5 text-gro-accent focus:ring-gro-accent">
+                        <span>
+                            Согласен на обработку персональных данных и ознакомлен с
+                            <a href="#privacy" onclick="openLegalModal('privacy-modal'); return false;" class="text-gro-accent hover:text-white">Политикой конфиденциальности</a>
+                            и
+                            <a href="#personal-data-consent" onclick="openLegalModal('consent-modal'); return false;" class="text-gro-accent hover:text-white">Согласием на обработку ПД</a>.
+                        </span>
+                    </label>
+
+                    <div class="pt-2">
                         <button type="submit" class="w-full bg-gro-accent text-white px-8 py-5 rounded-xl text-lg font-bold hover:bg-blue-600 transition-all shadow-neon hover:shadow-neon-hover flex justify-center items-center gap-3">
-                            Перейти к безопасной оплате
+                            Запросить счет на оплату
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                         </button>
                     </div>
@@ -1089,13 +1209,22 @@
     <section class="py-20 relative z-10 border-y border-white/5 bg-[#1b3671]/20">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 class="text-2xl md:text-3xl font-bold text-white mb-4">Бесплатный чек-лист налогов для малого бизнеса</h2>
-            <p class="text-gray-300 mb-8">Актуальный календарь оплат и отчетности, чтобы не получить штраф от ФНС. Оставьте контакт, и мы вышлем его автоматически.</p>
+            <p class="text-gray-300 mb-8">Чек-лист сейчас готовится. Оставьте контакт, и мы пришлем его вручную, когда материал будет готов.</p>
             
-            <form onsubmit="handleFormSubmit(event, 'Чек-лист отправлен')" class="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto">
-                <input type="email" required placeholder="ваш e-mail или телефон" class="flex-1 dark-input rounded-xl px-5 py-4 text-base">
-                <button type="submit" class="bg-white text-[#03050a] px-8 py-4 rounded-xl font-bold hover:bg-gray-200 transition-all">
-                    Получить
-                </button>
+            <form onsubmit="handleLeadSubmit(event, 'checklist', 'Запрос на чек-лист отправлен')" class="max-w-lg mx-auto">
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <input type="text" name="Контакт" required placeholder="ваш e-mail или телефон" class="flex-1 dark-input rounded-xl px-5 py-4 text-base">
+                    <button type="submit" class="bg-white text-[#03050a] px-8 py-4 rounded-xl font-bold hover:bg-gray-200 transition-all">
+                        Получить
+                    </button>
+                </div>
+                <label class="mt-4 flex gap-3 text-left text-xs text-gray-400 leading-relaxed">
+                    <input type="checkbox" required class="mt-0.5 h-4 w-4 rounded border-white/20 bg-white/5 text-gro-accent focus:ring-gro-accent">
+                    <span>
+                        Согласен на обработку персональных данных и ознакомлен с
+                        <a href="#privacy" onclick="openLegalModal('privacy-modal'); return false;" class="text-gro-accent hover:text-white">Политикой конфиденциальности</a>.
+                    </span>
+                </label>
             </form>
         </div>
     </section>
@@ -1105,10 +1234,10 @@
             
             <!-- Клуб Новое Время -->
             <div class="glass-panel border-white/10 rounded-2xl p-8 mb-24 text-center">
-                <span class="text-xs text-gro-accent uppercase tracking-widest font-bold mb-2 block">Основатель состоит в бизнес-клубе</span>
-                <h3 class="text-2xl font-bold text-white mb-4">«Новое время»</h3>
+                <span class="text-xs text-gro-accent uppercase tracking-widest font-bold mb-2 block">При поддержке GRO Consulting</span>
+                <h3 class="text-2xl font-bold text-white mb-4">Бизнес-клуб «Новое время»</h3>
                 <p class="text-gray-400 text-sm max-w-2xl mx-auto">
-                    Постоянный обмен опытом с лидерами рынка, актуальная информация о бизнес-среде и поддержка высокого стандарта ведения консалтинговых услуг.
+                    Закрытые встречи для клиентов и друзей компании: говорим о бизнесе, мышлении, психологии и практических решениях для предпринимателей. Это живой обмен опытом, актуальная информация о бизнес-среде и пространство для сильных деловых связей.
                 </p>
             </div>
 
@@ -1205,12 +1334,104 @@
             <div class="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-600">
                 <p>&copy; 2026 GRO Consulting. Все права защищены.</p>
                 <div class="flex space-x-6">
-                    <a href="#" class="hover:text-gray-300 transition-colors">Политика конфиденциальности</a>
-                    <a href="#" class="hover:text-gray-300 transition-colors">Согласие на обработку ПД</a>
+                    <a href="#privacy" onclick="openLegalModal('privacy-modal'); return false;" class="hover:text-gray-300 transition-colors">Политика конфиденциальности</a>
+                    <a href="#personal-data-consent" onclick="openLegalModal('consent-modal'); return false;" class="hover:text-gray-300 transition-colors">Согласие на обработку ПД</a>
                 </div>
             </div>
         </div>
     </footer>
+
+    <div id="privacy-modal" class="fixed inset-0 z-[120] hidden" role="dialog" aria-modal="true" aria-labelledby="privacy-title">
+        <button type="button" class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="closeLegalModal('privacy-modal')" aria-label="Закрыть политику конфиденциальности"></button>
+        <div class="relative mx-auto my-6 sm:my-10 max-h-[90vh] w-[calc(100%-2rem)] max-w-4xl overflow-y-auto rounded-3xl border border-white/10 bg-[#070b14] p-6 sm:p-8 shadow-2xl">
+            <div class="flex items-start justify-between gap-4 mb-6">
+                <div>
+                    <p class="text-xs font-bold uppercase tracking-[0.2em] text-gro-accent mb-2">GRO Consulting</p>
+                    <h2 id="privacy-title" class="text-2xl sm:text-3xl font-bold text-white">Политика конфиденциальности</h2>
+                </div>
+                <button type="button" onclick="closeLegalModal('privacy-modal')" class="rounded-full border border-white/10 px-3 py-2 text-gray-400 hover:text-white hover:bg-white/5" aria-label="Закрыть">×</button>
+            </div>
+            <div class="space-y-5 text-sm leading-relaxed text-gray-300">
+                <p><strong class="text-white">Оператор персональных данных:</strong> ООО "Бухгалтерские решения", ИНН 7718734515, ОГРН 5087746530636. Контакт для вопросов и отзыва согласия: <a href="mailto:info@gro-consult.ru" class="text-gro-accent hover:text-white">info@gro-consult.ru</a>.</p>
+                <p><strong class="text-white">Какие данные обрабатываются:</strong> имя, телефон, e-mail, название компании, сведения из обращения, данные заявки на счет, а также минимальные технические данные сайта: IP-адрес, сведения о браузере и устройстве.</p>
+                <p><strong class="text-white">Цели обработки:</strong> ответ на заявку, консультация, подбор тарифа, подготовка счета, исполнение договора, отправка запрошенных материалов и соблюдение требований закона.</p>
+                <p><strong class="text-white">Как обрабатываем данные:</strong> сбор, запись, систематизация, хранение, уточнение, использование, отправка заявки в рабочий Telegram-чат и/или на e-mail <a href="mailto:info@gro-consult.ru" class="text-gro-accent hover:text-white">info@gro-consult.ru</a>, блокирование и удаление. CRM, база заявок на сайте и веб-аналитика в MVP не используются. Данные не продаются третьим лицам.</p>
+                <p><strong class="text-white">Срок хранения:</strong> заявки хранятся только в рабочем Telegram-чате и/или почте до достижения цели обращения, окончания договорных отношений, истечения обязательных сроков хранения документов или до отзыва согласия, если нет законных оснований продолжить обработку.</p>
+                <p><strong class="text-white">Права пользователя:</strong> запросить информацию об обработке, уточнить данные, потребовать блокирования или удаления, а также отозвать согласие письмом на <a href="mailto:info@gro-consult.ru" class="text-gro-accent hover:text-white">info@gro-consult.ru</a>.</p>
+                <p class="text-xs text-gray-500">Рабочая редакция для MVP: платежный провайдер, CRM, база заявок и аналитика пока не подключены. При подключении этих сервисов политику нужно обновить.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="consent-modal" class="fixed inset-0 z-[120] hidden" role="dialog" aria-modal="true" aria-labelledby="consent-title">
+        <button type="button" class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="closeLegalModal('consent-modal')" aria-label="Закрыть согласие"></button>
+        <div class="relative mx-auto my-6 sm:my-10 max-h-[90vh] w-[calc(100%-2rem)] max-w-4xl overflow-y-auto rounded-3xl border border-white/10 bg-[#070b14] p-6 sm:p-8 shadow-2xl">
+            <div class="flex items-start justify-between gap-4 mb-6">
+                <div>
+                    <p class="text-xs font-bold uppercase tracking-[0.2em] text-gro-accent mb-2">GRO Consulting</p>
+                    <h2 id="consent-title" class="text-2xl sm:text-3xl font-bold text-white">Согласие на обработку персональных данных</h2>
+                </div>
+                <button type="button" onclick="closeLegalModal('consent-modal')" class="rounded-full border border-white/10 px-3 py-2 text-gray-400 hover:text-white hover:bg-white/5" aria-label="Закрыть">×</button>
+            </div>
+            <div class="space-y-5 text-sm leading-relaxed text-gray-300">
+                <p>Оставляя заявку или отмечая чекбокс согласия на сайте, пользователь свободно, своей волей и в своем интересе дает ООО "Бухгалтерские решения", ИНН 7718734515, ОГРН 5087746530636 согласие на обработку персональных данных.</p>
+                <p><strong class="text-white">Состав данных:</strong> имя, телефон, e-mail, название компании, содержание обращения, параметры подбора тарифа и иные сведения, которые пользователь сам указывает в форме.</p>
+                <p><strong class="text-white">Цели:</strong> обработка обращения, консультация, расчет тарифа, подготовка счета, связь с пользователем, отправка чек-листа после его подготовки и исполнение договорных отношений.</p>
+                <p><strong class="text-white">Действия с данными:</strong> сбор, запись, хранение, уточнение, использование, отправка заявки в рабочий Telegram-чат и/или на e-mail, блокирование и удаление. На этапе MVP отдельная CRM и база заявок на сайте не используются.</p>
+                <p><strong class="text-white">Срок действия согласия:</strong> до достижения целей обработки или до отзыва согласия. Отозвать согласие можно письмом на <a href="mailto:info@gro-consult.ru" class="text-gro-accent hover:text-white">info@gro-consult.ru</a>.</p>
+                <p class="text-xs text-gray-500">Рабочая редакция согласия подготовлена под текущий MVP: заявки идут в рабочий Telegram-чат и/или на почту, онлайн-эквайринг пока не подключен.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="lead-modal" class="fixed inset-0 z-[125] hidden" role="dialog" aria-modal="true" aria-labelledby="lead-title">
+        <button type="button" class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="closeLeadModal()" aria-label="Закрыть форму заявки"></button>
+        <div class="lead-modal-panel relative mx-auto my-6 sm:my-10 w-[calc(100%-2rem)] max-w-2xl rounded-3xl border p-6 sm:p-8 shadow-2xl overflow-hidden">
+            <div class="absolute -right-20 -top-20 h-56 w-56 rounded-full bg-gro-accent/20 blur-3xl pointer-events-none"></div>
+            <div class="relative z-10 flex items-start justify-between gap-4 mb-6">
+                <div>
+                    <p class="text-xs font-bold uppercase tracking-[0.2em] text-gro-accent mb-2">GRO Consulting</p>
+                    <h2 id="lead-title" class="lead-modal-title text-2xl sm:text-3xl font-bold">Оставить заявку</h2>
+                    <p class="lead-modal-help mt-2 text-sm">Ответим в Telegram, WhatsApp или по телефону. Обычно это быстрее, чем искать нужный раздел на сайте.</p>
+                </div>
+                <button type="button" onclick="closeLeadModal()" class="lead-modal-close rounded-full px-3 py-2" aria-label="Закрыть">×</button>
+            </div>
+
+            <form id="lead-modal-form" class="relative z-10 space-y-4" onsubmit="handleLeadSubmit(event, 'common', 'Заявка отправлена')">
+                <input type="hidden" name="Интерес" id="lead-interest" value="Консультация по услугам">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="lead-modal-label block text-xs mb-1">Ваше имя</label>
+                        <input type="text" name="Имя" placeholder="Иван Иванов" class="w-full lead-modal-input rounded-xl px-4 py-3 text-sm">
+                    </div>
+                    <div>
+                        <label class="lead-modal-label block text-xs mb-1">Телефон или Telegram *</label>
+                        <input type="text" name="Контакт" required placeholder="+7 ... или @username" class="w-full lead-modal-input rounded-xl px-4 py-3 text-sm">
+                    </div>
+                </div>
+                <div>
+                    <label class="lead-modal-label block text-xs mb-1">Что нужно?</label>
+                    <input type="text" name="Что нужно" id="lead-interest-visible" placeholder="Бухгалтерия, тариф, регистрация, ЭДО..." class="w-full lead-modal-input rounded-xl px-4 py-3 text-sm">
+                </div>
+                <div>
+                    <label class="lead-modal-label block text-xs mb-1">Комментарий</label>
+                    <textarea name="Комментарий" rows="4" placeholder="Коротко опишите задачу" class="w-full lead-modal-input rounded-xl px-4 py-3 text-sm resize-none"></textarea>
+                </div>
+                <label class="lead-modal-help flex gap-3 text-left text-xs leading-relaxed">
+                    <input type="checkbox" required class="mt-0.5 h-4 w-4 rounded border-white/20 bg-white/5 text-gro-accent focus:ring-gro-accent">
+                    <span>
+                        Согласен на обработку персональных данных и ознакомлен с
+                        <a href="#privacy" onclick="openLegalModal('privacy-modal'); return false;" class="text-gro-accent hover:text-white">Политикой конфиденциальности</a>
+                        и
+                        <a href="#personal-data-consent" onclick="openLegalModal('consent-modal'); return false;" class="text-gro-accent hover:text-white">Согласием на обработку ПД</a>.
+                    </span>
+                </label>
+                <button type="submit" class="w-full bg-gro-accent text-white px-8 py-4 rounded-xl text-base font-bold hover:bg-blue-600 transition-all shadow-neon hover:shadow-neon-hover">
+                    Отправить заявку
+                </button>
+            </form>
+        </div>
+    </div>
 
     <script>
         // Утилита для тостов (замена alert)
@@ -1219,6 +1440,128 @@
             document.getElementById('toast-msg').innerText = message;
             toast.classList.add('show');
             setTimeout(() => { toast.classList.remove('show'); }, 3000);
+        }
+
+        function openLegalModal(id) {
+            const modal = document.getElementById(id);
+            if (!modal) return;
+            modal.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+        }
+
+        function closeLegalModal(id) {
+            const modal = document.getElementById(id);
+            if (!modal) return;
+            modal.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+
+        function openLeadModal(interest = 'Консультация по услугам', visibleValue) {
+            const modal = document.getElementById('lead-modal');
+            const hidden = document.getElementById('lead-interest');
+            const visible = document.getElementById('lead-interest-visible');
+            if (!modal) return;
+            if (hidden) hidden.value = interest;
+            if (visible) {
+                const genericInterests = ['Заявка с сайта', 'Заявка с первого экрана', 'Консультация по услугам'];
+                visible.value = arguments.length > 1 ? visibleValue : (genericInterests.includes(interest) ? '' : interest);
+            }
+            modal.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+            setTimeout(() => {
+                const firstInput = modal.querySelector('input[name="Контакт"]');
+                if (firstInput) firstInput.focus();
+            }, 50);
+        }
+
+        function closeLeadModal() {
+            const modal = document.getElementById('lead-modal');
+            if (!modal) return;
+            modal.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                closeLegalModal('privacy-modal');
+                closeLegalModal('consent-modal');
+                closeLeadModal();
+            }
+        });
+
+        function applyLocalLinks() {
+            const host = window.location.hostname;
+            if (host !== '127.0.0.1' && host !== 'localhost') return;
+            document.querySelectorAll('[data-local-href]').forEach((link) => {
+                link.href = link.dataset.localHref;
+            });
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', applyLocalLinks);
+        } else {
+            applyLocalLinks();
+        }
+
+        function getLeadApiUrl() {
+            const host = window.location.hostname;
+            if (host === '127.0.0.1' || host === 'localhost') return 'http://127.0.0.1:3100/api/lead';
+            return '/api/lead';
+        }
+
+        function collectFormFields(form) {
+            const fields = {};
+            form.querySelectorAll('input, textarea, select').forEach((field) => {
+                if (!field.name || field.type === 'checkbox') return;
+                fields[field.name] = field.value;
+            });
+            return fields;
+        }
+
+        async function sendLead(kind, form) {
+            const payload = {
+                kind,
+                lang: document.documentElement.lang === 'zh' ? 'zh' : 'ru',
+                page: window.location.href,
+                fields: collectFormFields(form)
+            };
+
+            const response = await fetch(getLeadApiUrl(), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok || data.ok === false) {
+                throw new Error(data.error || 'lead_send_failed');
+            }
+        }
+
+        async function handleLeadSubmit(event, kind, successMessage) {
+            event.preventDefault();
+            const form = event.target;
+            const btn = form.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+
+            btn.innerHTML = 'Готовим заявку...';
+            btn.disabled = true;
+
+            try {
+                await sendLead(kind, form);
+                showToast(successMessage);
+                form.reset();
+                if (form.id === 'lead-modal-form') closeLeadModal();
+            } catch (error) {
+                showToast('Не удалось отправить заявку. Напишите нам в Telegram или WhatsApp.');
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        function handlePaymentSubmit(event) {
+            return handleLeadSubmit(event, 'payment', 'Заявка на счет отправлена');
         }
 
         // Универсальный обработчик форм (имитация отправки)
@@ -1334,7 +1677,7 @@
                             ${featuresHtml}
                         </ul>
 
-                        <button onclick="showToast('Заявка на тариф: ${t.name}')" class="w-full border px-6 py-4 rounded-xl text-sm font-bold transition-all ${btnClass}">
+                        <button onclick="openLeadModal('Тариф: ${t.name}')" class="w-full border px-6 py-4 rounded-xl text-sm font-bold transition-all ${btnClass}">
                             Оставить заявку
                         </button>
                     </div>
@@ -1827,14 +2170,24 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs text-gray-500 mb-1">Ваше имя *</label>
-                            <input type="text" required placeholder="Иван Иванов" class="w-full dark-input rounded-lg px-4 py-3 text-sm">
+                            <input type="text" name="Имя" required placeholder="Иван Иванов" class="w-full dark-input rounded-lg px-4 py-3 text-sm">
                         </div>
                         <div>
                             <label class="block text-xs text-gray-500 mb-1">Телефон *</label>
-                            <input type="tel" required placeholder="+7 (999) 000-00-00" class="w-full dark-input rounded-lg px-4 py-3 text-sm">
+                            <input type="tel" name="Телефон" required placeholder="+7 (999) 000-00-00" class="w-full dark-input rounded-lg px-4 py-3 text-sm">
                         </div>
                     </div>
                     
+                    <label class="flex gap-3 text-left text-xs text-gray-400 leading-relaxed">
+                        <input type="checkbox" required class="mt-0.5 h-4 w-4 rounded border-white/20 bg-white/5 text-gro-accent focus:ring-gro-accent">
+                        <span>
+                            Согласен на обработку персональных данных и ознакомлен с
+                            <a href="#privacy" onclick="openLegalModal('privacy-modal'); return false;" class="text-gro-accent hover:text-white">Политикой конфиденциальности</a>
+                            и
+                            <a href="#personal-data-consent" onclick="openLegalModal('consent-modal'); return false;" class="text-gro-accent hover:text-white">Согласием на обработку ПД</a>.
+                        </span>
+                    </label>
+
                     <div class="pt-2 flex flex-col sm:flex-row gap-4 items-center">
                         <button type="submit" id="tariff-btn-submit" class="w-full sm:w-auto flex-1 bg-gro-accent text-white px-8 py-4 rounded-xl text-sm font-bold hover:bg-blue-600 transition-all shadow-neon hover:shadow-neon-hover">
                             Получить точный расчет
@@ -1849,18 +2202,25 @@
 
         function tariffCalcSubmitForm(e) {
             e.preventDefault();
+            const form = document.getElementById('tariff-lead-form');
             const btn = document.getElementById('tariff-btn-submit');
             const originalText = btn.innerHTML;
             
             btn.innerHTML = `<svg class="animate-spin w-5 h-5 mx-auto text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
             btn.disabled = true;
 
-            setTimeout(() => {
-                showToast('Заявка подготовлена. В рабочей версии она будет отправляться в Telegram.');
-                document.getElementById('tariff-lead-form').reset();
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-            }, 1500);
+            sendLead('tariff', form)
+                .then(() => {
+                    showToast('Заявка на точный расчет отправлена');
+                    form.reset();
+                })
+                .catch(() => {
+                    showToast('Не удалось отправить заявку. Напишите нам в Telegram или WhatsApp.');
+                })
+                .finally(() => {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                });
         }
 
         function tariffCalcResetQuiz() {

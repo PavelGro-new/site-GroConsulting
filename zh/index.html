@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN" class="dark scroll-smooth">
 <head>
     <meta charset="UTF-8">
@@ -157,6 +157,56 @@
         }
         .dark-input::placeholder {
             color: rgba(255, 255, 255, 0.3);
+        }
+
+        .lead-modal-panel {
+            background:
+                radial-gradient(circle at 88% 0%, rgba(59, 130, 246, 0.18), transparent 34%),
+                linear-gradient(135deg, rgba(7, 11, 20, 0.98), rgba(9, 18, 36, 0.98));
+            color: #f8fafc;
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .lead-modal-title {
+            color: #f8fafc;
+        }
+
+        .lead-modal-label {
+            color: rgba(226, 232, 240, 0.9);
+            font-weight: 700;
+        }
+
+        .lead-modal-help {
+            color: rgba(203, 213, 225, 0.82);
+        }
+
+        .lead-modal-input {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(148, 163, 184, 0.34);
+            color: #f8fafc;
+            transition: all 0.25s ease;
+        }
+
+        .lead-modal-input:focus {
+            outline: none;
+            border-color: rgba(59, 130, 246, 0.9);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.16);
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .lead-modal-input::placeholder {
+            color: rgba(203, 213, 225, 0.66);
+        }
+
+        .lead-modal-close {
+            color: rgba(226, 232, 240, 0.75);
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .lead-modal-close:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.1);
         }
 
         /* --- СТИЛИ КАЛЬКУЛЯТОРА --- */
@@ -440,6 +490,55 @@
             color: rgba(11, 18, 32, 0.4);
         }
 
+        body.light-theme .lead-modal-panel {
+            background:
+                radial-gradient(circle at 88% 0%, rgba(59, 130, 246, 0.14), transparent 34%),
+                linear-gradient(135deg, rgba(248, 251, 255, 0.99), rgba(232, 240, 255, 0.98));
+            color: #0b1220;
+            border-color: rgba(27, 54, 113, 0.14);
+            box-shadow: 0 28px 90px rgba(27, 54, 113, 0.22);
+        }
+
+        body.light-theme .lead-modal-title {
+            color: #0b1220 !important;
+        }
+
+        body.light-theme .lead-modal-label {
+            color: #24324a !important;
+        }
+
+        body.light-theme .lead-modal-help {
+            color: #465875 !important;
+        }
+
+        body.light-theme .lead-modal-input {
+            background: rgba(255, 255, 255, 0.96);
+            border-color: rgba(27, 54, 113, 0.2);
+            color: #0b1220;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95);
+        }
+
+        body.light-theme .lead-modal-input:focus {
+            border-color: rgba(37, 99, 235, 0.86);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.14);
+            background: #fff;
+        }
+
+        body.light-theme .lead-modal-input::placeholder {
+            color: rgba(51, 65, 85, 0.58);
+        }
+
+        body.light-theme .lead-modal-close {
+            color: #475569;
+            background: rgba(255, 255, 255, 0.72);
+            border-color: rgba(27, 54, 113, 0.12);
+        }
+
+        body.light-theme .lead-modal-close:hover {
+            color: #0b1220;
+            background: #fff;
+        }
+
         body.light-theme .theme-toggle .sun-icon { display: block; }
         body.light-theme .theme-toggle .moon-icon { display: none; }
     </style>
@@ -490,7 +589,7 @@
                 
                 <!-- ЛОГОТ个体工商户 -->
                 <div class="flex-shrink-0 flex items-center relative h-10 w-48">
-                    <a href="#" class="absolute inset-0 flex items-center">
+                    <a href="/" class="absolute inset-0 flex items-center">
                         <!-- ТЗ: Путь assets/logo.png -->
                         <img src="/assets/logo.png" alt="GRO Consulting" 
                              class="h-8 w-auto brightness-0 invert transition-all duration-300"
@@ -523,9 +622,9 @@
                         </button>
                     </div>
 
-                    <a href="#payment" class="bg-gro-accent text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-blue-600 transition-all shadow-neon hover:shadow-neon-hover">
-                        支付服务费
-                    </a>
+                    <button type="button" onclick="openLeadModal('中文咨询申请', '')" class="bg-gro-accent text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-blue-600 transition-all shadow-neon hover:shadow-neon-hover">
+                        提交申请
+                    </button>
                 </div>
 
                 <div class="xl:hidden flex items-center gap-3">
@@ -563,9 +662,9 @@
                         <a href="#tariff-calculator" class="bg-gro-accent text-white px-8 py-4 rounded-xl text-base font-semibold hover:bg-blue-600 transition-all shadow-neon hover:shadow-neon-hover text-center flex items-center justify-center">
                             1分钟匹配服务方案
                         </a>
-                        <a href="#payment" class="glass-panel text-white hover:bg-white/10 px-8 py-4 rounded-xl text-base font-semibold transition-all text-center flex items-center justify-center">
-                            支付服务费
-                        </a>
+                        <button type="button" onclick="openLeadModal('中文咨询申请', '')" class="glass-panel text-white hover:bg-white/10 px-8 py-4 rounded-xl text-base font-semibold transition-all text-center flex items-center justify-center">
+                            提交申请
+                        </button>
                     </div>
                 </div>
                 
@@ -628,7 +727,7 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <a href="https://checking.gro-consult.ru/" class="tools-card glass-panel rounded-2xl p-7 hover:bg-white/5 transition-all group relative overflow-hidden flex flex-col justify-between">
+                <a href="https://checking.gro-consult.ru/zh/" data-local-href="http://127.0.0.1:4301/zh/" class="tools-card glass-panel rounded-2xl p-7 hover:bg-white/5 transition-all group relative overflow-hidden flex flex-col justify-between">
                     <div class="absolute -right-16 -bottom-16 w-44 h-44 bg-gro-accent/15 rounded-full blur-3xl group-hover:bg-gro-accent/25 transition-all"></div>
                     <div>
                         <div class="w-12 h-12 rounded-xl border border-gro-accent/30 bg-gro-accent/10 flex items-center justify-center mb-7 text-gro-accent shadow-neon">
@@ -645,7 +744,7 @@
                     </div>
                 </a>
 
-                <a href="https://currency.gro-consult.ru/" class="tools-card glass-panel rounded-2xl p-7 hover:bg-white/5 transition-all group relative overflow-hidden flex flex-col justify-between">
+                <a href="https://currency.gro-consult.ru/zh/" data-local-href="http://127.0.0.1:4302/zh/" class="tools-card glass-panel rounded-2xl p-7 hover:bg-white/5 transition-all group relative overflow-hidden flex flex-col justify-between">
                     <div class="absolute -right-16 -bottom-16 w-44 h-44 bg-violet-500/15 rounded-full blur-3xl group-hover:bg-violet-500/25 transition-all"></div>
                     <div>
                         <div class="w-12 h-12 rounded-xl border border-gro-accent/30 bg-gro-accent/10 flex items-center justify-center mb-7 text-gro-accent shadow-neon">
@@ -662,19 +761,19 @@
                     </div>
                 </a>
 
-                <a href="#tariff-calculator" class="tools-card glass-panel rounded-2xl p-7 hover:bg-white/5 transition-all group relative overflow-hidden flex flex-col justify-between">
+                <a href="https://gro-consult.ru/zh/tax/" data-local-href="http://127.0.0.1:4303/zh/" class="tools-card glass-panel rounded-2xl p-7 hover:bg-white/5 transition-all group relative overflow-hidden flex flex-col justify-between">
                     <div class="absolute -right-16 -bottom-16 w-44 h-44 bg-gro-teal/15 rounded-full blur-3xl group-hover:bg-gro-teal/25 transition-all"></div>
                     <div>
                         <div class="w-12 h-12 rounded-xl border border-gro-accent/30 bg-gro-accent/10 flex items-center justify-center mb-7 text-gro-accent shadow-neon">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M9 7h6m-6 4h6m-7 8h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                         </div>
-                        <h3 class="text-2xl font-bold text-white mb-3">税制选择</h3>
+                        <h3 class="text-2xl font-bold text-white mb-3">税制计算器</h3>
                         <p class="text-gray-400 leading-relaxed">
-                            下一个工具：根据企业形式、收入、支出和员工情况选择税制。
+                            按收入、费用、增值税和保险缴费比较简化税制、一般税制和自动简化税制，估算税负和净利润。
                         </p>
                     </div>
                     <div class="mt-8 flex items-center justify-between text-sm font-semibold text-gro-accent">
-                        <span>即将推出</span>
+                        <span>计算</span>
                         <span class="text-gray-500">tax</span>
                     </div>
                 </a>
@@ -747,16 +846,22 @@
                 <!-- Декоративное свечение -->
                 <div class="absolute -inset-1 bg-gradient-to-r from-gro-accent/40 to-gro-blue/40 rounded-3xl blur-xl opacity-30 group-hover:opacity-50 transition duration-500 pointer-events-none"></div>
                 
-                <!-- Контейнер видео -->
+                <!-- Временная заглушка видео -->
                 <div class="glass-panel rounded-2xl p-2 sm:p-4 relative border border-white/10 shadow-2xl overflow-hidden bg-[#0a0f1a]/80">
-                    <div style="position: relative; padding-top: 56.72%; width: 100%; border-radius: 0.5rem; overflow: hidden; background-color: #000;">
-                        <iframe
-                            src="https://kinescope.io/embed/75ziaHSdFe34gwAMMUHBRA"
-                            allow="autoplay; fullscreen; picture-in-picture; encrypted-media; gyroscope; accelerometer; clipboard-write; screen-wake-lock;"
-                            frameborder="0"
-                            allowfullscreen
-                            style="position: absolute; width: 100%; height: 100%; top: 0; left: 0;">
-                        </iframe>
+                    <div class="aspect-video rounded-xl overflow-hidden bg-gradient-to-br from-[#071225] via-[#0b1530] to-[#03050a] border border-white/10 flex flex-col items-center justify-center text-center px-6 relative">
+                        <div class="absolute inset-0 opacity-70 pointer-events-none">
+                            <div class="absolute -left-24 top-1/3 w-[120%] h-24 bg-gro-accent/20 blur-3xl rotate-[-8deg]"></div>
+                            <div class="absolute right-0 bottom-10 w-64 h-64 bg-gro-blue/20 rounded-full blur-3xl"></div>
+                        </div>
+                        <div class="relative z-10">
+                            <div class="text-2xl sm:text-3xl font-black tracking-tight text-white mb-4">
+                                GRO<span class="text-gro-accent">CONSULTING</span>
+                            </div>
+                            <p class="text-xl sm:text-2xl font-bold text-white mb-2">视频即将上线</p>
+                            <p class="text-sm sm:text-base text-gray-400 max-w-xl mx-auto">
+                                我们正在准备一段简短介绍。服务内容和价格信息目前已可在页面查看。
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -885,7 +990,7 @@
                     </div>
                     
                     <div class="space-y-4">
-                        <div class="glass-panel p-5 rounded-xl flex items-center justify-between group hover:bg-white/5 transition-all cursor-pointer" onclick="showToast('申请：注册个体工商户')">
+                        <div class="glass-panel p-5 rounded-xl flex items-center justify-between group hover:bg-white/5 transition-all cursor-pointer" onclick="openLeadModal('注册个体工商户')">
                             <div>
                                 <h4 class="text-white font-medium text-lg">注册个体工商户</h4>
                                 <p class="text-sm text-gray-500 mt-1">准备文件并提交给税务机关</p>
@@ -895,7 +1000,7 @@
                             </div>
                         </div>
                         
-                        <div class="glass-panel p-5 rounded-xl flex items-center justify-between group hover:bg-white/5 transition-all cursor-pointer" onclick="showToast('申请：注册有限责任公司')">
+                        <div class="glass-panel p-5 rounded-xl flex items-center justify-between group hover:bg-white/5 transition-all cursor-pointer" onclick="openLeadModal('注册有限责任公司')">
                             <div>
                                 <h4 class="text-white font-medium text-lg">注册有限责任公司</h4>
                                 <p class="text-sm text-gray-500 mt-1">章程、决议、经营代码选择</p>
@@ -905,7 +1010,7 @@
                             </div>
                         </div>
 
-                        <div class="glass-panel p-5 rounded-xl flex items-center justify-between group hover:bg-white/5 transition-all cursor-pointer" onclick="showToast('申请：登记信息变更')">
+                        <div class="glass-panel p-5 rounded-xl flex items-center justify-between group hover:bg-white/5 transition-all cursor-pointer" onclick="openLeadModal('登记信息变更')">
                             <div>
                                 <h4 class="text-white font-medium text-lg">登记信息变更</h4>
                                 <p class="text-sm text-gray-500 mt-1">变更负责人、地址或经营代码</p>
@@ -915,7 +1020,7 @@
                             </div>
                         </div>
 
-                        <div class="glass-panel border-gro-accent/30 p-5 rounded-xl flex items-center justify-between group hover:bg-gro-accent/10 transition-all cursor-pointer" onclick="showToast('申请：开立银行账户')">
+                        <div class="glass-panel border-gro-accent/30 p-5 rounded-xl flex items-center justify-between group hover:bg-gro-accent/10 transition-all cursor-pointer" onclick="openLeadModal('开立银行账户')">
                             <div>
                                 <h4 class="text-white font-medium text-lg">开立银行账户</h4>
                                 <p class="text-sm text-gray-500 mt-1">协助选择合作银行</p>
@@ -951,7 +1056,7 @@
                         </div>
                     </div>
                     
-                    <button onclick="showToast('申请：开通电子申报')" class="w-full glass-panel border border-gro-accent text-white px-6 py-4 rounded-xl text-sm font-bold hover:bg-gro-accent/20 transition-all shadow-neon">
+                    <button onclick="openLeadModal('开通电子申报')" class="w-full glass-panel border border-gro-accent text-white px-6 py-4 rounded-xl text-sm font-bold hover:bg-gro-accent/20 transition-all shadow-neon">
                         申请开通
                     </button>
                 </div>
@@ -1044,40 +1149,55 @@
                         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                     </div>
                     <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">在线支付服务费</h2>
-                    <p class="text-gray-400 max-w-xl mx-auto">用于快速支付会计和法律服务费的安全支付入口。数据按 PCI DSS 标准保护。</p>
+                    <p class="text-gray-400 max-w-xl mx-auto">我们正在接入网站在线支付。现在可以留下开票信息，我们会通过 Telegram 或 e-mail 与您联系。</p>
                 </div>
 
-                <form onsubmit="handleFormSubmit(event, '支付已启动')" class="space-y-6 relative z-10">
+                <div class="relative z-10 mb-8 rounded-2xl border border-gro-accent/30 bg-gro-accent/10 px-5 py-4 text-sm text-blue-100">
+                    <div class="font-semibold text-white mb-1">在线支付正在配置中</div>
+                    <div class="text-gray-300">目前不会从银行卡扣款。此表单仅用于准备账单。</div>
+                </div>
+
+                <form onsubmit="handleLeadSubmit(event, 'payment', '账单申请已发送')" class="space-y-6 relative z-10">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="block text-sm font-medium mb-2 text-gray-300">付款金额（卢布）*</label>
-                            <input type="number" required min="1" placeholder="0.00" class="w-full dark-input rounded-xl px-5 py-4 font-mono text-lg">
+                            <input type="number" name="付款金额" required min="1" placeholder="0.00" class="w-full dark-input rounded-xl px-5 py-4 font-mono text-lg">
                         </div>
                         <div>
                             <label class="block text-sm font-medium mb-2 text-gray-300">电话 *</label>
-                            <input type="tel" required placeholder="+7 (___) ___-__-__" class="w-full dark-input rounded-xl px-5 py-4 text-base">
+                            <input type="tel" name="电话" required placeholder="+7 (___) ___-__-__" class="w-full dark-input rounded-xl px-5 py-4 text-base">
                         </div>
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium mb-2 text-gray-300">付款用途 *</label>
-                        <input type="text" required placeholder="请输入账单号和服务名称" class="w-full dark-input rounded-xl px-5 py-4 text-base">
+                        <input type="text" name="付款用途" required placeholder="请输入账单号和服务名称" class="w-full dark-input rounded-xl px-5 py-4 text-base">
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="block text-sm font-medium mb-2 text-gray-300">姓名或公司名称 *</label>
-                            <input type="text" required placeholder="公司名称或个人姓名" class="w-full dark-input rounded-xl px-5 py-4 text-base">
+                            <input type="text" name="姓名或公司" required placeholder="公司名称或个人姓名" class="w-full dark-input rounded-xl px-5 py-4 text-base">
                         </div>
                         <div>
                             <label class="block text-sm font-medium mb-2 text-gray-300">电子邮箱（用于收据）</label>
-                            <input type="email" placeholder="mail@example.com" class="w-full dark-input rounded-xl px-5 py-4 text-base">
+                            <input type="email" name="E-mail" placeholder="mail@example.com" class="w-full dark-input rounded-xl px-5 py-4 text-base">
                         </div>
                     </div>
 
-                    <div class="pt-6">
+                    <label class="flex gap-3 text-left text-xs sm:text-sm text-gray-400 leading-relaxed">
+                        <input type="checkbox" required class="mt-1 h-4 w-4 rounded border-white/20 bg-white/5 text-gro-accent focus:ring-gro-accent">
+                        <span>
+                            我同意个人数据处理，并已阅读
+                            <a href="#privacy" onclick="openLegalModal('privacy-modal'); return false;" class="text-gro-accent hover:text-white">隐私政策</a>
+                            和
+                            <a href="#personal-data-consent" onclick="openLegalModal('consent-modal'); return false;" class="text-gro-accent hover:text-white">个人数据处理同意书</a>。
+                        </span>
+                    </label>
+
+                    <div class="pt-2">
                         <button type="submit" class="w-full bg-gro-accent text-white px-8 py-5 rounded-xl text-lg font-bold hover:bg-blue-600 transition-all shadow-neon hover:shadow-neon-hover flex justify-center items-center gap-3">
-                            进入安全支付
+                            请求开具付款账单
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                         </button>
                     </div>
@@ -1089,13 +1209,22 @@
     <section class="py-20 relative z-10 border-y border-white/5 bg-[#1b3671]/20">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 class="text-2xl md:text-3xl font-bold text-white mb-4">小微企业税务清单</h2>
-            <p class="text-gray-300 mb-8">包含纳税和申报日期的实用日历，帮助避免税务罚款。留下联系方式，我们会自动发送。</p>
+            <p class="text-gray-300 mb-8">税务清单正在准备中。留下联系方式，材料准备好后我们会手动发送。</p>
             
-            <form onsubmit="handleFormSubmit(event, '清单已发送')" class="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto">
-                <input type="email" required placeholder="您的邮箱或电话" class="flex-1 dark-input rounded-xl px-5 py-4 text-base">
-                <button type="submit" class="bg-white text-[#03050a] px-8 py-4 rounded-xl font-bold hover:bg-gray-200 transition-all">
-                    获取
-                </button>
+            <form onsubmit="handleLeadSubmit(event, 'checklist', '税务清单申请已发送')" class="max-w-lg mx-auto">
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <input type="text" name="联系方式" required placeholder="您的邮箱或电话" class="flex-1 dark-input rounded-xl px-5 py-4 text-base">
+                    <button type="submit" class="bg-white text-[#03050a] px-8 py-4 rounded-xl font-bold hover:bg-gray-200 transition-all">
+                        获取
+                    </button>
+                </div>
+                <label class="mt-4 flex gap-3 text-left text-xs text-gray-400 leading-relaxed">
+                    <input type="checkbox" required class="mt-0.5 h-4 w-4 rounded border-white/20 bg-white/5 text-gro-accent focus:ring-gro-accent">
+                    <span>
+                        我同意个人数据处理，并已阅读
+                        <a href="#privacy" onclick="openLegalModal('privacy-modal'); return false;" class="text-gro-accent hover:text-white">隐私政策</a>。
+                    </span>
+                </label>
             </form>
         </div>
     </section>
@@ -1105,10 +1234,10 @@
             
             <!-- Клуб Новое Время -->
             <div class="glass-panel border-white/10 rounded-2xl p-8 mb-24 text-center">
-                <span class="text-xs text-gro-accent uppercase tracking-widest font-bold mb-2 block">创始人是商务俱乐部成员</span>
-                <h3 class="text-2xl font-bold text-white mb-4">«Новое время»</h3>
+                <span class="text-xs text-gro-accent uppercase tracking-widest font-bold mb-2 block">由 GRO Consulting 支持</span>
+                <h3 class="text-2xl font-bold text-white mb-4">商务俱乐部 «Новое время»</h3>
                 <p class="text-gray-400 text-sm max-w-2xl mx-auto">
-                    与市场领先者持续交流经验，掌握商业环境变化，并保持高标准的咨询服务。
+                    面向客户和公司朋友的闭门交流：讨论商业、思维、心理学以及企业家的实际解决方案。这是经验交流、了解商业环境变化和建立高质量商业关系的空间。
                 </p>
             </div>
 
@@ -1205,12 +1334,104 @@
             <div class="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-600">
                 <p>&copy; 2026 GRO Consulting. 版权所有。</p>
                 <div class="flex space-x-6">
-                    <a href="#" class="hover:text-gray-300 transition-colors">隐私政策</a>
-                    <a href="#" class="hover:text-gray-300 transition-colors">个人数据处理同意书</a>
+                    <a href="#privacy" onclick="openLegalModal('privacy-modal'); return false;" class="hover:text-gray-300 transition-colors">隐私政策</a>
+                    <a href="#personal-data-consent" onclick="openLegalModal('consent-modal'); return false;" class="hover:text-gray-300 transition-colors">个人数据处理同意书</a>
                 </div>
             </div>
         </div>
     </footer>
+
+    <div id="privacy-modal" class="fixed inset-0 z-[120] hidden" role="dialog" aria-modal="true" aria-labelledby="privacy-title">
+        <button type="button" class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="closeLegalModal('privacy-modal')" aria-label="关闭隐私政策"></button>
+        <div class="relative mx-auto my-6 sm:my-10 max-h-[90vh] w-[calc(100%-2rem)] max-w-4xl overflow-y-auto rounded-3xl border border-white/10 bg-[#070b14] p-6 sm:p-8 shadow-2xl">
+            <div class="flex items-start justify-between gap-4 mb-6">
+                <div>
+                    <p class="text-xs font-bold uppercase tracking-[0.2em] text-gro-accent mb-2">GRO Consulting</p>
+                    <h2 id="privacy-title" class="text-2xl sm:text-3xl font-bold text-white">隐私政策</h2>
+                </div>
+                <button type="button" onclick="closeLegalModal('privacy-modal')" class="rounded-full border border-white/10 px-3 py-2 text-gray-400 hover:text-white hover:bg-white/5" aria-label="关闭">×</button>
+            </div>
+            <div class="space-y-5 text-sm leading-relaxed text-gray-300">
+                <p><strong class="text-white">个人数据运营方：</strong>ООО "Бухгалтерские решения", ИНН 7718734515, ОГРН 5087746530636。数据相关问题和撤回同意请联系：<a href="mailto:info@gro-consult.ru" class="text-gro-accent hover:text-white">info@gro-consult.ru</a>。</p>
+                <p><strong class="text-white">处理的数据：</strong>姓名、电话、电子邮箱、公司名称、咨询内容、账单申请信息，以及网站的最低限度技术数据：IP 地址、浏览器和设备信息。</p>
+                <p><strong class="text-white">处理目的：</strong>回复申请、提供咨询、匹配服务方案、准备账单、履行合同、发送用户请求的资料并遵守法律要求。</p>
+                <p><strong class="text-white">处理方式：</strong>收集、记录、整理、存储、更新、使用，将申请发送到工作 Telegram 聊天和/或 e-mail <a href="mailto:info@gro-consult.ru" class="text-gro-accent hover:text-white">info@gro-consult.ru</a>，限制处理和删除。MVP 阶段不使用 CRM、网站申请数据库和网站分析系统。我们不会出售个人数据。</p>
+                <p><strong class="text-white">存储期限：</strong>申请仅保存在工作 Telegram 聊天和/或邮箱中，直至处理目的实现、合同关系结束、法定文件保存期限届满，或用户撤回同意；如法律另有要求，则按法律执行。</p>
+                <p><strong class="text-white">用户权利：</strong>可请求处理信息、更正数据、要求限制或删除数据，也可以发送邮件至 <a href="mailto:info@gro-consult.ru" class="text-gro-accent hover:text-white">info@gro-consult.ru</a> 撤回同意。</p>
+                <p class="text-xs text-gray-500">MVP 工作版本：支付服务商、CRM、申请数据库和网站分析系统尚未接入。接入这些服务后需要更新本政策。</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="consent-modal" class="fixed inset-0 z-[120] hidden" role="dialog" aria-modal="true" aria-labelledby="consent-title">
+        <button type="button" class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="closeLegalModal('consent-modal')" aria-label="关闭同意书"></button>
+        <div class="relative mx-auto my-6 sm:my-10 max-h-[90vh] w-[calc(100%-2rem)] max-w-4xl overflow-y-auto rounded-3xl border border-white/10 bg-[#070b14] p-6 sm:p-8 shadow-2xl">
+            <div class="flex items-start justify-between gap-4 mb-6">
+                <div>
+                    <p class="text-xs font-bold uppercase tracking-[0.2em] text-gro-accent mb-2">GRO Consulting</p>
+                    <h2 id="consent-title" class="text-2xl sm:text-3xl font-bold text-white">个人数据处理同意书</h2>
+                </div>
+                <button type="button" onclick="closeLegalModal('consent-modal')" class="rounded-full border border-white/10 px-3 py-2 text-gray-400 hover:text-white hover:bg-white/5" aria-label="关闭">×</button>
+            </div>
+            <div class="space-y-5 text-sm leading-relaxed text-gray-300">
+                <p>用户提交表单或勾选同意框，即表示自愿并在自身利益下同意 ООО "Бухгалтерские решения", ИНН 7718734515, ОГРН 5087746530636 处理其个人数据。</p>
+                <p><strong class="text-white">数据范围：</strong>姓名、电话、电子邮箱、公司名称、咨询内容、服务方案匹配参数以及用户在表单中自行提供的其他信息。</p>
+                <p><strong class="text-white">目的：</strong>处理咨询申请、提供服务说明、计算服务方案、准备账单、联系用户、在材料准备好后发送税务清单并履行合同关系。</p>
+                <p><strong class="text-white">处理动作：</strong>收集、记录、存储、更新、使用，将申请发送到工作 Telegram 聊天和/或 e-mail，限制处理和删除。MVP 阶段不使用单独的 CRM 或网站申请数据库。</p>
+                <p><strong class="text-white">同意期限：</strong>直至处理目的实现或用户撤回同意。可通过 <a href="mailto:info@gro-consult.ru" class="text-gro-accent hover:text-white">info@gro-consult.ru</a> 撤回。</p>
+                <p class="text-xs text-gray-500">此同意书适用于当前 MVP：申请发送到工作 Telegram 聊天和/或邮箱，在线收款尚未接入。</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="lead-modal" class="fixed inset-0 z-[125] hidden" role="dialog" aria-modal="true" aria-labelledby="lead-title">
+        <button type="button" class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="closeLeadModal()" aria-label="关闭申请表"></button>
+        <div class="lead-modal-panel relative mx-auto my-6 sm:my-10 w-[calc(100%-2rem)] max-w-2xl rounded-3xl border p-6 sm:p-8 shadow-2xl overflow-hidden">
+            <div class="absolute -right-20 -top-20 h-56 w-56 rounded-full bg-gro-accent/20 blur-3xl pointer-events-none"></div>
+            <div class="relative z-10 flex items-start justify-between gap-4 mb-6">
+                <div>
+                    <p class="text-xs font-bold uppercase tracking-[0.2em] text-gro-accent mb-2">GRO Consulting</p>
+                    <h2 id="lead-title" class="lead-modal-title text-2xl sm:text-3xl font-bold">提交申请</h2>
+                    <p class="lead-modal-help mt-2 text-sm">请留下联系方式，我们会通过 Telegram、WhatsApp 或电话联系您。</p>
+                </div>
+                <button type="button" onclick="closeLeadModal()" class="lead-modal-close rounded-full px-3 py-2" aria-label="关闭">×</button>
+            </div>
+
+            <form id="lead-modal-form" class="relative z-10 space-y-4" onsubmit="handleLeadSubmit(event, 'common', '申请已发送')">
+                <input type="hidden" name="需求" id="lead-interest" value="中文咨询申请">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="lead-modal-label block text-xs mb-1">姓名</label>
+                        <input type="text" name="姓名" placeholder="张先生" class="w-full lead-modal-input rounded-xl px-4 py-3 text-sm">
+                    </div>
+                    <div>
+                        <label class="lead-modal-label block text-xs mb-1">电话或 Telegram *</label>
+                        <input type="text" name="联系方式" required placeholder="+7 ... 或 @username" class="w-full lead-modal-input rounded-xl px-4 py-3 text-sm">
+                    </div>
+                </div>
+                <div>
+                    <label class="lead-modal-label block text-xs mb-1">您需要什么？</label>
+                    <input type="text" name="服务需求" id="lead-interest-visible" placeholder="会计、报价、注册、电子申报..." class="w-full lead-modal-input rounded-xl px-4 py-3 text-sm">
+                </div>
+                <div>
+                    <label class="lead-modal-label block text-xs mb-1">备注</label>
+                    <textarea name="备注" rows="4" placeholder="请简单描述您的问题" class="w-full lead-modal-input rounded-xl px-4 py-3 text-sm resize-none"></textarea>
+                </div>
+                <label class="lead-modal-help flex gap-3 text-left text-xs leading-relaxed">
+                    <input type="checkbox" required class="mt-0.5 h-4 w-4 rounded border-white/20 bg-white/5 text-gro-accent focus:ring-gro-accent">
+                    <span>
+                        我同意个人数据处理，并已阅读
+                        <a href="#privacy" onclick="openLegalModal('privacy-modal'); return false;" class="text-gro-accent hover:text-white">隐私政策</a>
+                        和
+                        <a href="#personal-data-consent" onclick="openLegalModal('consent-modal'); return false;" class="text-gro-accent hover:text-white">个人数据处理同意书</a>。
+                    </span>
+                </label>
+                <button type="submit" class="w-full bg-gro-accent text-white px-8 py-4 rounded-xl text-base font-bold hover:bg-blue-600 transition-all shadow-neon hover:shadow-neon-hover">
+                    发送申请
+                </button>
+            </form>
+        </div>
+    </div>
 
     <script>
         // Утилита для тостов (замена alert)
@@ -1219,6 +1440,128 @@
             document.getElementById('toast-msg').innerText = message;
             toast.classList.add('show');
             setTimeout(() => { toast.classList.remove('show'); }, 3000);
+        }
+
+        function openLegalModal(id) {
+            const modal = document.getElementById(id);
+            if (!modal) return;
+            modal.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+        }
+
+        function closeLegalModal(id) {
+            const modal = document.getElementById(id);
+            if (!modal) return;
+            modal.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+
+        function openLeadModal(interest = '中文咨询申请', visibleValue) {
+            const modal = document.getElementById('lead-modal');
+            const hidden = document.getElementById('lead-interest');
+            const visible = document.getElementById('lead-interest-visible');
+            if (!modal) return;
+            if (hidden) hidden.value = interest;
+            if (visible) {
+                const genericInterests = ['网站申请', '首页申请', '中文咨询申请'];
+                visible.value = arguments.length > 1 ? visibleValue : (genericInterests.includes(interest) ? '' : interest);
+            }
+            modal.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+            setTimeout(() => {
+                const firstInput = modal.querySelector('input[name="联系方式"]');
+                if (firstInput) firstInput.focus();
+            }, 50);
+        }
+
+        function closeLeadModal() {
+            const modal = document.getElementById('lead-modal');
+            if (!modal) return;
+            modal.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                closeLegalModal('privacy-modal');
+                closeLegalModal('consent-modal');
+                closeLeadModal();
+            }
+        });
+
+        function applyLocalLinks() {
+            const host = window.location.hostname;
+            if (host !== '127.0.0.1' && host !== 'localhost') return;
+            document.querySelectorAll('[data-local-href]').forEach((link) => {
+                link.href = link.dataset.localHref;
+            });
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', applyLocalLinks);
+        } else {
+            applyLocalLinks();
+        }
+
+        function getLeadApiUrl() {
+            const host = window.location.hostname;
+            if (host === '127.0.0.1' || host === 'localhost') return 'http://127.0.0.1:3100/api/lead';
+            return '/api/lead';
+        }
+
+        function collectFormFields(form) {
+            const fields = {};
+            form.querySelectorAll('input, textarea, select').forEach((field) => {
+                if (!field.name || field.type === 'checkbox') return;
+                fields[field.name] = field.value;
+            });
+            return fields;
+        }
+
+        async function sendLead(kind, form) {
+            const payload = {
+                kind,
+                lang: document.documentElement.lang === 'zh' ? 'zh' : 'ru',
+                page: window.location.href,
+                fields: collectFormFields(form)
+            };
+
+            const response = await fetch(getLeadApiUrl(), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok || data.ok === false) {
+                throw new Error(data.error || 'lead_send_failed');
+            }
+        }
+
+        async function handleLeadSubmit(event, kind, successMessage) {
+            event.preventDefault();
+            const form = event.target;
+            const btn = form.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+
+            btn.innerHTML = '正在准备...';
+            btn.disabled = true;
+
+            try {
+                await sendLead(kind, form);
+                showToast(successMessage);
+                form.reset();
+                if (form.id === 'lead-modal-form') closeLeadModal();
+            } catch (error) {
+                showToast('申请发送失败。请通过 Telegram 或 WhatsApp 联系我们。');
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        function handlePaymentSubmit(event) {
+            return handleLeadSubmit(event, 'payment', '账单申请已发送');
         }
 
         // Универсальный обработчик форм (имитация отправки)
@@ -1334,7 +1677,7 @@
                             ${featuresHtml}
                         </ul>
 
-                        <button onclick="showToast('方案申请：${t.name}')" class="w-full border px-6 py-4 rounded-xl text-sm font-bold transition-all ${btnClass}">
+                        <button onclick="openLeadModal('服务方案：${t.name}')" class="w-full border px-6 py-4 rounded-xl text-sm font-bold transition-all ${btnClass}">
                             提交申请
                         </button>
                     </div>
@@ -1827,11 +2170,11 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs text-gray-500 mb-1">您的姓名 *</label>
-                            <input type="text" required placeholder="张先生" class="w-full dark-input rounded-lg px-4 py-3 text-sm">
+                            <input type="text" name="姓名" required placeholder="张先生" class="w-full dark-input rounded-lg px-4 py-3 text-sm">
                         </div>
                         <div>
                             <label class="block text-xs text-gray-500 mb-1">电话 *</label>
-                            <input type="tel" required placeholder="+7 (999) 000-00-00" class="w-full dark-input rounded-lg px-4 py-3 text-sm">
+                            <input type="tel" name="电话" required placeholder="+7 (999) 000-00-00" class="w-full dark-input rounded-lg px-4 py-3 text-sm">
                         </div>
                     </div>
                     
@@ -1849,18 +2192,25 @@
 
         function tariffCalcSubmitForm(e) {
             e.preventDefault();
+            const form = document.getElementById('tariff-lead-form');
             const btn = document.getElementById('tariff-btn-submit');
             const originalText = btn.innerHTML;
             
             btn.innerHTML = `<svg class="animate-spin w-5 h-5 mx-auto text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
             btn.disabled = true;
 
-            setTimeout(() => {
-                showToast('申请已准备好。在正式版本中会发送到 Telegram。');
-                document.getElementById('tariff-lead-form').reset();
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-            }, 1500);
+            sendLead('tariff', form)
+                .then(() => {
+                    showToast('准确报价申请已发送');
+                    form.reset();
+                })
+                .catch(() => {
+                    showToast('申请发送失败。请通过 Telegram 或 WhatsApp 联系我们。');
+                })
+                .finally(() => {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                });
         }
 
         function tariffCalcResetQuiz() {
