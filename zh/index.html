@@ -231,49 +231,51 @@
         }
 
         .gro-ribbon {
-            position: absolute;
+            position: fixed;
             left: 50%;
             top: 14vh;
             width: 170vw;
             height: 62vh;
             min-height: 420px;
             transform: translate3d(calc(-50% + var(--ribbon-x, 0px)), var(--ribbon-y, 0px), 0);
-            color: #315dff;
-            opacity: 0.95;
+            color: #2f6bff;
+            opacity: 1;
             pointer-events: none;
             z-index: -1;
-            filter: saturate(1.15);
+            filter: saturate(1.38) brightness(1.12);
             transition: opacity 0.4s ease;
+            will-change: transform;
+            contain: paint;
         }
 
         .ribbon-core {
-            animation: ribbonFlow 5.8s ease-in-out infinite alternate;
+            animation: ribbonFlow 4.4s ease-in-out infinite alternate;
             transform-origin: center;
         }
 
         .ribbon-glow {
-            animation: ribbonFlowReverse 7.4s ease-in-out infinite alternate;
+            animation: ribbonFlowReverse 5.6s ease-in-out infinite alternate;
             transform-origin: center;
         }
 
         .ribbon-line {
-            animation: ribbonLine 4.8s ease-in-out infinite alternate;
+            animation: ribbonLine 3.8s ease-in-out infinite alternate;
             transform-origin: center;
         }
 
         @keyframes ribbonFlow {
-            from { transform: translateX(-78px) translateY(22px) scaleX(1.03); }
-            to { transform: translateX(96px) translateY(-28px) scaleX(1.08); }
+            from { transform: translateX(-96px) translateY(28px) scaleX(1.04); }
+            to { transform: translateX(118px) translateY(-36px) scaleX(1.1); }
         }
 
         @keyframes ribbonFlowReverse {
-            from { transform: translateX(88px) translateY(-26px) scaleX(1.06); }
-            to { transform: translateX(-82px) translateY(34px) scaleX(1.02); }
+            from { transform: translateX(108px) translateY(-32px) scaleX(1.08); }
+            to { transform: translateX(-100px) translateY(42px) scaleX(1.03); }
         }
 
         @keyframes ribbonLine {
-            from { transform: translateX(-52px) translateY(12px); }
-            to { transform: translateX(68px) translateY(-18px); }
+            from { transform: translateX(-70px) translateY(16px); }
+            to { transform: translateX(86px) translateY(-24px); }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -376,6 +378,83 @@
             max-height: 34px;
         }
 
+        .edo-logo-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .edo-logo-card,
+        .edo-logo-frame {
+            min-width: 0;
+        }
+
+        .video-placeholder {
+            background:
+                radial-gradient(circle at 26% 18%, rgba(59, 130, 246, 0.24), transparent 34%),
+                radial-gradient(circle at 78% 76%, rgba(20, 184, 166, 0.12), transparent 32%),
+                linear-gradient(135deg, rgba(9, 18, 37, 0.98), rgba(4, 8, 17, 0.96));
+        }
+
+        .video-placeholder::before {
+            content: "";
+            position: absolute;
+            inset: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 18px;
+            pointer-events: none;
+        }
+
+        .video-logo {
+            color: #f8fafc;
+            text-shadow: 0 14px 36px rgba(0, 0, 0, 0.34);
+        }
+
+        .video-placeholder-title {
+            color: #f8fafc;
+            text-shadow: 0 12px 30px rgba(0, 0, 0, 0.34);
+        }
+
+        .video-placeholder-copy {
+            color: #cbd5e1;
+        }
+
+        @media (max-width: 430px) {
+            .edo-logo-card {
+                min-height: 132px;
+                padding: 16px 12px !important;
+            }
+
+            .edo-logo-frame {
+                height: 64px;
+                padding: 12px 14px;
+                border-radius: 14px;
+            }
+
+            .edo-logo {
+                max-width: min(150px, 100%);
+                max-height: 38px;
+            }
+
+            .edo-logo-taxcom {
+                max-width: min(132px, 100%);
+                max-height: 32px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .edo-logo-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .edo-logo-card {
+                min-height: 124px;
+            }
+
+            .edo-logo-frame {
+                height: 58px;
+                padding: 10px 12px;
+            }
+        }
+
         body.light-theme {
             background-color: #f4f8ff;
             color: #0b1220;
@@ -401,7 +480,7 @@
 
         body.light-theme .gro-ribbon {
             color: #2563eb;
-            opacity: 0.62;
+            opacity: 0.82;
             mix-blend-mode: multiply;
         }
 
@@ -472,6 +551,28 @@
         body.light-theme .edo-logo-frame {
             background: rgba(255, 255, 255, 0.98);
             box-shadow: 0 16px 34px rgba(27, 54, 113, 0.08), inset 0 1px 0 rgba(255, 255, 255, 1);
+        }
+
+        body.light-theme .video-placeholder {
+            background:
+                radial-gradient(circle at 24% 18%, rgba(59, 130, 246, 0.18), transparent 34%),
+                radial-gradient(circle at 78% 78%, rgba(20, 184, 166, 0.12), transparent 32%),
+                linear-gradient(135deg, rgba(239, 246, 255, 0.96), rgba(255, 255, 255, 0.9));
+            border-color: rgba(59, 130, 246, 0.16);
+        }
+
+        body.light-theme .video-placeholder::before {
+            border-color: rgba(37, 99, 235, 0.12);
+        }
+
+        body.light-theme .video-logo,
+        body.light-theme .video-placeholder-title {
+            color: #0b1220;
+            text-shadow: none;
+        }
+
+        body.light-theme .video-placeholder-copy {
+            color: #40506b;
         }
 
         body.light-theme .partner-logo-frame-dark {
@@ -715,10 +816,7 @@
                         <span class="w-2 h-2 rounded-full bg-gro-accent animate-pulse"></span>
                         GroConsulting 实用工具
                     </div>
-                    <h2 class="text-3xl md:text-5xl font-bold tracking-tight mb-5 text-white">商务工具</h2>
-                    <p class="text-gray-400 text-lg leading-relaxed">
-                        把常用检查和计算放在主营服务旁边：企业主可以先快速判断情况，再申请专业支持。
-                    </p>
+                    <h2 class="text-3xl md:text-5xl font-bold tracking-tight text-white">商务工具</h2>
                 </div>
                 <a href="#tariff-calculator" class="glass-panel text-white hover:bg-white/10 px-6 py-4 rounded-xl text-sm font-semibold transition-all inline-flex items-center justify-center gap-2">
                     选择服务
@@ -848,17 +946,17 @@
                 
                 <!-- Временная заглушка видео -->
                 <div class="glass-panel rounded-2xl p-2 sm:p-4 relative border border-white/10 shadow-2xl overflow-hidden bg-[#0a0f1a]/80">
-                    <div class="aspect-video rounded-xl overflow-hidden bg-gradient-to-br from-[#071225] via-[#0b1530] to-[#03050a] border border-white/10 flex flex-col items-center justify-center text-center px-6 relative">
-                        <div class="absolute inset-0 opacity-70 pointer-events-none">
+                    <div class="video-placeholder aspect-video rounded-xl overflow-hidden border border-white/10 flex flex-col items-center justify-center text-center px-6 relative">
+                        <div class="absolute inset-0 opacity-75 pointer-events-none">
                             <div class="absolute -left-24 top-1/3 w-[120%] h-24 bg-gro-accent/20 blur-3xl rotate-[-8deg]"></div>
                             <div class="absolute right-0 bottom-10 w-64 h-64 bg-gro-blue/20 rounded-full blur-3xl"></div>
                         </div>
-                        <div class="relative z-10">
-                            <div class="text-2xl sm:text-3xl font-black tracking-tight text-white mb-4">
+                        <div class="relative z-10 max-w-2xl">
+                            <div class="video-logo text-2xl sm:text-3xl font-black tracking-tight mb-4">
                                 GRO<span class="text-gro-accent">CONSULTING</span>
                             </div>
-                            <p class="text-xl sm:text-2xl font-bold text-white mb-2">视频即将上线</p>
-                            <p class="text-sm sm:text-base text-gray-400 max-w-xl mx-auto">
+                            <p class="video-placeholder-title text-xl sm:text-2xl font-bold mb-2">视频即将上线</p>
+                            <p class="video-placeholder-copy text-sm sm:text-base max-w-xl mx-auto">
                                 我们正在准备一段简短介绍。服务内容和价格信息目前已可在页面查看。
                             </p>
                         </div>
@@ -1045,7 +1143,7 @@
                         我们是主流电子文件交换系统的官方代理。帮助办理电子签名、接入电子申报，并与合作方建立数字化文件交换。
                     </p>
                     
-                    <div class="grid grid-cols-2 gap-4 mb-8">
+                    <div class="edo-logo-grid grid grid-cols-2 gap-4 mb-8">
                         <div class="edo-logo-card glass-panel p-5 rounded-xl flex flex-col items-center justify-center gap-3 border-white/5 hover:border-white/20 transition-all">
                             <span class="edo-logo-frame"><img src="/assets/edo/kontur.svg" alt="Контур" class="edo-logo"></span>
                             <span class="text-xs text-gray-500 uppercase tracking-wider text-center">官方合作伙伴</span>
@@ -1489,18 +1587,41 @@
             }
         });
 
-        function applyLocalLinks() {
+        function getCurrentThemeForLinks() {
+            try {
+                return localStorage.getItem('gro-theme-v2') || 'dark';
+            } catch (error) {
+                return 'dark';
+            }
+        }
+
+        function withThemeParam(url, theme) {
+            try {
+                const parsed = new URL(url, window.location.href);
+                parsed.searchParams.set('theme', theme);
+                return parsed.href;
+            } catch (error) {
+                return url;
+            }
+        }
+
+        function syncToolLinksTheme() {
             const host = window.location.hostname;
-            if (host !== '127.0.0.1' && host !== 'localhost') return;
+            const isLocal = host === '127.0.0.1' || host === 'localhost';
+            const theme = getCurrentThemeForLinks();
             document.querySelectorAll('[data-local-href]').forEach((link) => {
-                link.href = link.dataset.localHref;
+                if (!link.dataset.publicHref) {
+                    link.dataset.publicHref = link.getAttribute('href');
+                }
+                const baseHref = isLocal ? link.dataset.localHref : link.dataset.publicHref;
+                link.href = link.classList.contains('tools-card') ? withThemeParam(baseHref, theme) : baseHref;
             });
         }
 
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', applyLocalLinks);
+            document.addEventListener('DOMContentLoaded', syncToolLinksTheme);
         } else {
-            applyLocalLinks();
+            syncToolLinksTheme();
         }
 
         function getLeadApiUrl() {
@@ -2249,15 +2370,56 @@
                 try {
                     localStorage.setItem('gro-theme-v2', theme);
                 } catch (error) {}
+                syncToolLinksTheme();
+            };
+
+            const ribbon = document.querySelector('.gro-ribbon');
+            let ribbonFrame = null;
+            let ribbonReady = false;
+            const ribbonState = { x: 0, y: 0, targetX: 0, targetY: 0 };
+
+            const calculateRibbonTarget = () => {
+                const scrollY = window.scrollY || 0;
+                ribbonState.targetY = Math.sin(scrollY / 720) * 22;
+                ribbonState.targetX = Math.cos(scrollY / 820) * 18;
+            };
+
+            const applyRibbonPosition = () => {
+                if (!ribbon) return;
+                ribbon.style.setProperty('--ribbon-y', `${ribbonState.y}px`);
+                ribbon.style.setProperty('--ribbon-x', `${ribbonState.x}px`);
+            };
+
+            const renderRibbon = () => {
+                if (!ribbon) {
+                    ribbonFrame = null;
+                    return;
+                }
+                if (!ribbonReady) {
+                    ribbonState.x = ribbonState.targetX;
+                    ribbonState.y = ribbonState.targetY;
+                    ribbonReady = true;
+                } else {
+                    ribbonState.x += (ribbonState.targetX - ribbonState.x) * 0.075;
+                    ribbonState.y += (ribbonState.targetY - ribbonState.y) * 0.075;
+                }
+                applyRibbonPosition();
+                const dx = Math.abs(ribbonState.targetX - ribbonState.x);
+                const dy = Math.abs(ribbonState.targetY - ribbonState.y);
+                if (dx > 0.18 || dy > 0.18) {
+                    ribbonFrame = window.requestAnimationFrame(renderRibbon);
+                } else {
+                    ribbonState.x = ribbonState.targetX;
+                    ribbonState.y = ribbonState.targetY;
+                    applyRibbonPosition();
+                    ribbonFrame = null;
+                }
             };
 
             const updateRibbon = () => {
-                const ribbon = document.querySelector('.gro-ribbon');
-                if (!ribbon) return;
-                const shiftY = Math.sin(window.scrollY / 260) * 74;
-                const shiftX = Math.cos(window.scrollY / 340) * 58;
-                ribbon.style.setProperty('--ribbon-y', `${shiftY}px`);
-                ribbon.style.setProperty('--ribbon-x', `${shiftX}px`);
+                calculateRibbonTarget();
+                if (ribbonFrame !== null) return;
+                ribbonFrame = window.requestAnimationFrame(renderRibbon);
             };
 
             window.addEventListener('DOMContentLoaded', () => {
