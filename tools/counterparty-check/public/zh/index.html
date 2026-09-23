@@ -1,0 +1,1231 @@
+﻿<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GRO Consulting 企业核验</title>
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" href="/favicon-32x32.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #03050a;
+      --nav: rgba(3, 5, 10, 0.88);
+      --panel: rgba(8, 13, 24, 0.86);
+      --field: rgba(0, 0, 0, 0.28);
+      --border: rgba(255, 255, 255, 0.08);
+      --blue: #3b82f6;
+      --deep-blue: #1b3671;
+      --teal: #14b8a6;
+      --violet: #8b5cf6;
+      --green: #22c55e;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --text: #f8fafc;
+      --muted: #9ca3af;
+      --muted-2: #687386;
+      --shadow: 0 26px 80px rgba(0, 0, 0, 0.54);
+      color-scheme: dark;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    body.light-theme {
+      --bg: #f4f8ff;
+      --nav: rgba(248, 251, 255, 0.82);
+      --panel: rgba(255, 255, 255, 0.78);
+      --field: rgba(255, 255, 255, 0.78);
+      --border: rgba(27, 54, 113, 0.12);
+      --text: #0b1220;
+      --muted: #40506b;
+      --muted-2: #687792;
+      --shadow: 0 24px 78px rgba(27, 54, 113, 0.14);
+      color-scheme: light;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -4;
+      background:
+        radial-gradient(circle at 12% 28%, rgba(27, 54, 113, 0.86), transparent 30rem),
+        radial-gradient(circle at 74% 15%, rgba(139, 92, 246, 0.16), transparent 25rem),
+        radial-gradient(circle at 82% 82%, rgba(20, 184, 166, 0.08), transparent 24rem),
+        linear-gradient(90deg, rgba(27, 54, 113, 0.38), transparent 38%, rgba(3, 5, 10, 0.98));
+    }
+
+    body.light-theme::before {
+      background:
+        radial-gradient(circle at 14% 8%, rgba(59, 130, 246, 0.22), transparent 28rem),
+        radial-gradient(circle at 86% 28%, rgba(124, 58, 237, 0.12), transparent 26rem),
+        linear-gradient(135deg, #eef5ff 0%, #f8fbff 48%, #e9f1ff 100%);
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -3;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
+      background-size: 64px 64px;
+      mask-image: linear-gradient(90deg, #000, rgba(0, 0, 0, 0.58), transparent 84%);
+    }
+
+    body.light-theme::after {
+      background-image:
+        linear-gradient(rgba(27, 54, 113, 0.055) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(27, 54, 113, 0.055) 1px, transparent 1px);
+    }
+
+    button, input { font: inherit; }
+
+    .page {
+      min-height: 100vh;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .gro-ribbon {
+      position: fixed;
+      left: 50%;
+      top: 12vh;
+      width: 170vw;
+      height: 62vh;
+      min-height: 420px;
+      transform: translate3d(calc(-50% + var(--ribbon-x, 0px)), var(--ribbon-y, 0px), 0);
+      color: #315dff;
+      opacity: 0.9;
+      pointer-events: none;
+      z-index: -1;
+      filter: saturate(1.15);
+    }
+
+    body.light-theme .gro-ribbon {
+      color: #2563eb;
+      opacity: 0.58;
+      mix-blend-mode: multiply;
+    }
+
+    .ribbon-core {
+      animation: ribbonFlow 5.8s ease-in-out infinite alternate;
+      transform-origin: center;
+    }
+
+    .ribbon-glow {
+      animation: ribbonFlowReverse 7.4s ease-in-out infinite alternate;
+      transform-origin: center;
+    }
+
+    .ribbon-line {
+      animation: ribbonLine 4.8s ease-in-out infinite alternate;
+      transform-origin: center;
+    }
+
+    @keyframes ribbonFlow {
+      from { transform: translateX(-78px) translateY(22px) scaleX(1.03); }
+      to { transform: translateX(96px) translateY(-28px) scaleX(1.08); }
+    }
+
+    @keyframes ribbonFlowReverse {
+      from { transform: translateX(88px) translateY(-26px) scaleX(1.06); }
+      to { transform: translateX(-82px) translateY(34px) scaleX(1.02); }
+    }
+
+    @keyframes ribbonLine {
+      from { transform: translateX(-52px) translateY(12px); }
+      to { transform: translateX(68px) translateY(-18px); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .ribbon-core,
+      .ribbon-glow,
+      .ribbon-line { animation: none; }
+    }
+
+    .page::before {
+      content: "";
+      position: fixed;
+      left: 31%;
+      top: 82px;
+      width: 74vw;
+      height: 520px;
+      z-index: -2;
+      pointer-events: none;
+      background:
+        linear-gradient(112deg, transparent 0 12%, rgba(59, 130, 246, 0.08) 24%, transparent 42%),
+        linear-gradient(128deg, transparent 0 22%, rgba(139, 92, 246, 0.11) 38%, transparent 58%),
+        linear-gradient(145deg, transparent 0 34%, rgba(20, 184, 166, 0.06) 46%, transparent 68%);
+      transform: rotate(-8deg);
+      filter: blur(2px);
+      opacity: 0.92;
+    }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      background: var(--nav);
+      backdrop-filter: blur(18px);
+    }
+
+    .nav-inner {
+      width: min(1210px, calc(100% - 48px));
+      height: 64px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 28px;
+    }
+
+    .logo {
+      display: inline-flex;
+      align-items: baseline;
+      text-decoration: none;
+      font-size: 21px;
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: 0;
+      color: #fff;
+      white-space: nowrap;
+    }
+
+    .logo span { color: var(--blue); }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      color: #8f98a8;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .nav-actions a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .nav-phone {
+      color: #f4f7fb;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .lang {
+      min-height: 34px;
+      display: inline-flex;
+      align-items: center;
+      padding: 0 13px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.035);
+      white-space: nowrap;
+    }
+
+    .theme-toggle {
+      width: 38px;
+      height: 38px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.035);
+      color: inherit;
+      cursor: pointer;
+    }
+
+    .theme-toggle .sun-icon { display: none; }
+    .theme-toggle .moon-icon { display: block; }
+    body.light-theme .theme-toggle .sun-icon { display: block; }
+    body.light-theme .theme-toggle .moon-icon { display: none; }
+
+    body.light-theme .nav,
+    body.light-theme .lang,
+    body.light-theme .theme-toggle,
+    body.light-theme .search-panel,
+    body.light-theme .results-panel,
+    body.light-theme .card,
+    body.light-theme .detail,
+    body.light-theme .state,
+    body.light-theme .source-note {
+      border-color: rgba(27, 54, 113, 0.12);
+    }
+
+    body.light-theme .nav {
+      box-shadow: 0 12px 38px rgba(27, 54, 113, 0.08);
+    }
+
+    body.light-theme h1,
+    body.light-theme h2,
+    body.light-theme h3,
+    body.light-theme .logo,
+    body.light-theme .nav-phone,
+    body.light-theme .company-name,
+    body.light-theme .text {
+      color: #0b1220;
+    }
+
+    body.light-theme .lead,
+    body.light-theme .muted,
+    body.light-theme .full-name,
+    body.light-theme .source-note,
+    body.light-theme .label {
+      color: #40506b;
+    }
+
+    body.light-theme input {
+      color: #0b1220;
+      background: rgba(255, 255, 255, 0.82);
+      border-color: rgba(27, 54, 113, 0.16);
+    }
+
+    body.light-theme input:focus {
+      background: #fff;
+      border-color: rgba(59, 130, 246, 0.54);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.14), 0 18px 34px rgba(27, 54, 113, 0.08);
+    }
+
+    body.light-theme .search-panel,
+    body.light-theme .results-panel {
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(246, 249, 255, 0.78));
+      box-shadow: 0 28px 70px rgba(27, 54, 113, 0.14), 0 0 50px rgba(59, 130, 246, 0.1);
+    }
+
+    body.light-theme .search-panel::before,
+    body.light-theme .results-panel::before {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.36), transparent 35%, rgba(139, 92, 246, 0.14) 58%, rgba(20, 184, 166, 0.12));
+    }
+
+    body.light-theme .state {
+      color: #465773;
+      background: rgba(255, 255, 255, 0.52);
+      border-color: rgba(27, 54, 113, 0.16);
+    }
+
+    body.light-theme .state strong {
+      color: #10203c;
+    }
+
+    body.light-theme .summary {
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.12), rgba(255, 255, 255, 0.62));
+      border-color: rgba(34, 197, 94, 0.24);
+    }
+
+    body.light-theme .summary.warn {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.14), rgba(255, 255, 255, 0.62));
+      border-color: rgba(245, 158, 11, 0.28);
+    }
+
+    body.light-theme .summary.bad {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.13), rgba(255, 255, 255, 0.62));
+      border-color: rgba(239, 68, 68, 0.28);
+    }
+
+    body.light-theme .score {
+      color: #0b1220;
+      background: rgba(255, 255, 255, 0.78);
+    }
+
+    body.light-theme .company-card {
+      background: linear-gradient(135deg, rgba(219, 234, 254, 0.76), rgba(255, 255, 255, 0.72));
+    }
+
+    body.light-theme .company-card,
+    body.light-theme .card,
+    body.light-theme .detail {
+      background-color: rgba(255, 255, 255, 0.66);
+      border-color: rgba(27, 54, 113, 0.12);
+    }
+
+    body.light-theme .status-pill {
+      color: #047857;
+      background: rgba(16, 185, 129, 0.12);
+      border-color: rgba(16, 185, 129, 0.28);
+    }
+
+    body.light-theme .status-pill.bad {
+      color: #b91c1c;
+      background: rgba(239, 68, 68, 0.1);
+      border-color: rgba(239, 68, 68, 0.24);
+    }
+
+    body.light-theme .tag {
+      color: #1d4ed8;
+      background: rgba(59, 130, 246, 0.1);
+      border-color: rgba(59, 130, 246, 0.22);
+    }
+
+    body.light-theme .row {
+      border-top-color: rgba(27, 54, 113, 0.1);
+    }
+
+    body.light-theme .risk {
+      background: rgba(16, 185, 129, 0.1);
+      border-color: rgba(16, 185, 129, 0.22);
+    }
+
+    body.light-theme .risk.warn {
+      background: rgba(245, 158, 11, 0.12);
+      border-color: rgba(245, 158, 11, 0.26);
+    }
+
+    body.light-theme .risk.bad {
+      background: rgba(239, 68, 68, 0.1);
+      border-color: rgba(239, 68, 68, 0.24);
+    }
+
+    .wrap {
+      width: min(1210px, calc(100% - 48px));
+      margin: 0 auto;
+      padding: 58px 0 52px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 390px) minmax(0, 1fr);
+      gap: 72px;
+      align-items: start;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 100%;
+      color: #f4f7fb;
+      font-size: clamp(42px, 4.8vw, 64px);
+      line-height: 1.04;
+      letter-spacing: 0;
+      font-weight: 800;
+    }
+
+    .lead {
+      max-width: 560px;
+      margin: 18px 0 0;
+      color: #a0a8b7;
+      font-size: 17px;
+      line-height: 1.6;
+    }
+
+    .search-panel,
+    .results-panel {
+      position: relative;
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      background: linear-gradient(180deg, rgba(11, 17, 30, 0.94), rgba(7, 12, 22, 0.88));
+      box-shadow: var(--shadow), 0 0 60px rgba(27, 54, 113, 0.34), 0 0 90px rgba(139, 92, 246, 0.08);
+      backdrop-filter: blur(18px);
+      overflow: hidden;
+    }
+
+    .search-panel::before,
+    .results-panel::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      padding: 1px;
+      border-radius: inherit;
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.52), transparent 33%, rgba(139, 92, 246, 0.2) 58%, rgba(20, 184, 166, 0.18));
+      mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+
+    .search-panel {
+      padding: 24px;
+      margin-top: 2px;
+    }
+
+    .input-label {
+      display: block;
+      margin-bottom: 9px;
+      color: #cbd5e1;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .search {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+    }
+
+    input {
+      width: 100%;
+      min-height: 54px;
+      border: 1px solid rgba(255, 255, 255, 0.11);
+      border-radius: 12px;
+      background: var(--field);
+      color: #fff;
+      padding: 0 16px;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.16), 0 0 20px rgba(59, 130, 246, 0.16);
+      background: rgba(0, 0, 0, 0.42);
+    }
+
+    .btn {
+      min-height: 54px;
+      padding: 0 24px;
+      border: 0;
+      border-radius: 12px;
+      background: var(--blue);
+      color: #fff;
+      box-shadow: 0 15px 35px rgba(59, 130, 246, 0.28);
+      cursor: pointer;
+      font-weight: 800;
+      transition: transform 0.18s ease, background 0.18s ease, opacity 0.18s ease;
+      white-space: nowrap;
+    }
+
+    .btn:hover { background: #2563eb; transform: translateY(-1px); }
+    .btn:disabled { cursor: wait; opacity: 0.68; transform: none; }
+
+    .state {
+      display: grid;
+      gap: 8px;
+      min-height: 210px;
+      place-items: center;
+      padding: 34px;
+      border: 1px dashed rgba(255, 255, 255, 0.12);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.026);
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .state strong {
+      color: #fff;
+      font-size: 18px;
+    }
+
+    .results-panel {
+      display: none;
+      margin-top: 22px;
+      padding: 22px;
+    }
+
+    .results-panel.show {
+      display: block;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 14px;
+      padding: 18px;
+      border: 1px solid rgba(34, 197, 94, 0.24);
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(255, 255, 255, 0.025));
+    }
+
+    .summary.warn {
+      border-color: rgba(245, 158, 11, 0.3);
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(255, 255, 255, 0.025));
+    }
+
+    .summary.bad {
+      border-color: rgba(239, 68, 68, 0.34);
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.12), rgba(255, 255, 255, 0.025));
+    }
+
+    .summary h2,
+    .company-name {
+      margin: 0;
+      letter-spacing: 0;
+    }
+
+    .summary h2 {
+      font-size: 22px;
+    }
+
+    .summary p,
+    .full-name,
+    .muted {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .score {
+      display: grid;
+      place-items: center;
+      min-width: 98px;
+      min-height: 66px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.045);
+      color: #fff;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .score span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .company-card,
+    .card,
+    .detail {
+      border: 1px solid rgba(255, 255, 255, 0.075);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.035);
+    }
+
+    .company-card {
+      padding: 18px;
+      margin-bottom: 14px;
+      background: linear-gradient(135deg, rgba(27, 54, 113, 0.28), rgba(139, 92, 246, 0.07));
+    }
+
+    .company-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .company-name {
+      font-size: 22px;
+      line-height: 1.25;
+    }
+
+    .status-pill,
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 32px;
+      padding: 0 11px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .status-pill {
+      border: 1px solid rgba(34, 197, 94, 0.34);
+      background: rgba(34, 197, 94, 0.1);
+      color: #bbf7d0;
+    }
+
+    .status-pill.bad {
+      border-color: rgba(239, 68, 68, 0.34);
+      background: rgba(239, 68, 68, 0.1);
+      color: #fecaca;
+    }
+
+    .details,
+    .grid-2,
+    .grid-3 {
+      display: grid;
+      gap: 12px;
+    }
+
+    .details { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+    .detail {
+      min-height: 76px;
+      padding: 13px;
+    }
+
+    .label {
+      margin-bottom: 5px;
+      color: var(--muted-2);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .text {
+      color: #edf2f7;
+      font-size: 14px;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+    }
+
+    .section {
+      margin-top: 14px;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .section-title h3 {
+      margin: 0;
+      font-size: 17px;
+      letter-spacing: 0;
+    }
+
+    .card {
+      padding: 16px;
+    }
+
+    .list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .row {
+      display: grid;
+      gap: 5px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .row:first-child {
+      padding-top: 0;
+      border-top: 0;
+    }
+
+    .risk-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .risk {
+      display: flex;
+      align-items: flex-start;
+      gap: 11px;
+      padding: 13px;
+      border-radius: 13px;
+      background: rgba(34, 197, 94, 0.08);
+      border: 1px solid rgba(34, 197, 94, 0.22);
+    }
+
+    .risk.warn {
+      background: rgba(245, 158, 11, 0.08);
+      border-color: rgba(245, 158, 11, 0.26);
+    }
+
+    .risk.bad {
+      background: rgba(239, 68, 68, 0.08);
+      border-color: rgba(239, 68, 68, 0.26);
+    }
+
+    .risk-dot {
+      width: 10px;
+      height: 10px;
+      margin-top: 4px;
+      border-radius: 50%;
+      background: var(--green);
+      flex: 0 0 auto;
+    }
+
+    .risk.warn .risk-dot { background: var(--amber); }
+    .risk.bad .risk-dot { background: var(--red); }
+
+    .source-note {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      color: #748197;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .source-note a {
+      color: #93c5fd;
+      text-decoration: none;
+      font-weight: 800;
+    }
+
+    @media (max-width: 1120px) {
+      .hero { grid-template-columns: 1fr; }
+      .search-panel { margin-top: 0; }
+    }
+
+    @media (max-width: 760px) {
+      .nav-inner,
+      .wrap { width: min(100% - 24px, 1210px); }
+      .nav-actions { gap: 10px; }
+      .nav-phone { display: none; }
+      .wrap { padding-top: 42px; }
+      .search,
+      .summary,
+      .details,
+      .grid-2,
+      .grid-3,
+      .risk-grid { grid-template-columns: 1fr; }
+      .company-top,
+      .source-note {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      h1 { font-size: 42px; }
+      .search-panel,
+      .results-panel { padding: 18px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <svg class="gro-ribbon" viewBox="0 0 1600 520" preserveAspectRatio="none" aria-hidden="true">
+      <defs>
+        <linearGradient id="ribbonGradientMainCheck" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="currentColor" stop-opacity="0.03"/>
+          <stop offset="0.36" stop-color="currentColor" stop-opacity="0.34"/>
+          <stop offset="0.62" stop-color="currentColor" stop-opacity="0.82"/>
+          <stop offset="1" stop-color="currentColor" stop-opacity="0.08"/>
+        </linearGradient>
+        <linearGradient id="ribbonGradientSoftCheck" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="currentColor" stop-opacity="0.02"/>
+          <stop offset="0.55" stop-color="currentColor" stop-opacity="0.24"/>
+          <stop offset="1" stop-color="currentColor" stop-opacity="0.06"/>
+        </linearGradient>
+        <filter id="ribbonBlurCheck" x="-20%" y="-90%" width="140%" height="280%">
+          <feGaussianBlur stdDeviation="11" result="blur"/>
+          <feMerge>
+            <feMergeNode in="blur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+      <path class="ribbon-glow" d="M-80 288 C 244 88, 523 484, 900 292 C 1144 168, 1326 82, 1700 26 L1700 136 C 1308 190, 1088 360, 742 430 C 472 486, 224 304, -80 378 Z" fill="url(#ribbonGradientSoftCheck)"/>
+      <path class="ribbon-core" d="M-90 258 C 214 336, 392 474, 754 424 C 1055 383, 1194 240, 1700 94 L1700 176 C 1312 312, 1054 496, 674 478 C 348 462, 122 330, -90 302 Z" fill="url(#ribbonGradientMainCheck)" filter="url(#ribbonBlurCheck)"/>
+      <path class="ribbon-line" d="M-90 320 C 250 244, 438 386, 760 372 C 1072 360, 1262 224, 1700 138" fill="none" stroke="currentColor" stroke-opacity="0.72" stroke-width="6" filter="url(#ribbonBlurCheck)"/>
+    </svg>
+    <header class="nav">
+      <div class="nav-inner">
+        <a class="logo" href="https://gro-consult.ru/zh/" data-local-href="http://127.0.0.1:4300/zh/" aria-label="GRO Consulting">GRO<span>CONSULTING</span></a>
+        <div class="nav-actions">
+          <a class="nav-phone" href="tel:+74955653797">8 (495) 565-37-97</a>
+          <a class="lang" href="/">RU / 中文</a>
+          <button class="theme-toggle" type="button" data-theme-toggle aria-label="Переключить тему">
+            <svg class="moon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M21 14.2A7.6 7.6 0 0 1 9.8 3a8.8 8.8 0 1 0 11.2 11.2Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+            <svg class="sun-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M12 2v3M12 19v3M4.9 4.9 7 7M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1 7 17M17 7l2.1-2.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <section class="hero">
+        <div>
+          <h1>企业核验</h1>
+          <p class="lead">输入公司或个体工商户 INN，获取简明报告：状态、注册信息、地址、联系方式和关键风险信号。</p>
+        </div>
+
+        <div class="search-panel">
+          <form id="search-form">
+            <label class="input-label" for="inn">公司或个体工商户 INN</label>
+            <div class="search">
+              <input id="inn" inputmode="numeric" maxlength="12" autocomplete="off" placeholder="10 或 12 位数字" aria-label="公司或个体工商户 INN">
+              <button class="btn" id="submit" type="submit">查询</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <div class="state" id="empty-state">
+        <strong>请输入 INN 进行查询</strong>
+        <span>服务返回结果后，报告会显示在这里。</span>
+      </div>
+
+      <section class="results-panel" id="results" aria-label="Отчет по контрагенту">
+        <div class="summary" id="summary">
+          <div>
+            <h2 id="summary-title"></h2>
+            <p id="summary-text"></p>
+          </div>
+          <div class="score" id="summary-score"></div>
+        </div>
+
+        <article class="company-card">
+          <div class="company-top">
+            <div>
+              <h2 class="company-name" id="company-name"></h2>
+              <div class="full-name" id="company-full-name"></div>
+            </div>
+            <div class="status-pill" id="company-status"></div>
+          </div>
+          <div class="details">
+            <div class="detail"><div class="label" id="inn-label">ИНН / КПП</div><div class="text" id="company-inn"></div></div>
+            <div class="detail"><div class="label" id="ogrn-label">ОГРН / ОКПО</div><div class="text" id="company-ogrn"></div></div>
+            <div class="detail"><div class="label">Дата регистрации</div><div class="text" id="company-date"></div></div>
+            <div class="detail"><div class="label">Регион</div><div class="text" id="company-region"></div></div>
+          </div>
+        </article>
+
+        <section class="section">
+          <div class="section-title"><h3>风险因素</h3></div>
+          <div class="risk-grid" id="risks"></div>
+        </section>
+
+        <section class="section grid-2">
+          <article class="card">
+            <h3>注册地址</h3>
+            <div class="text" id="address"></div>
+            <div class="muted" id="address-risk"></div>
+          </article>
+
+          <article class="card">
+            <h3>主营业务代码</h3>
+            <div class="text" id="okved"></div>
+          </article>
+        </section>
+
+        <section class="section grid-2" id="people-section">
+          <article class="card">
+            <h3>负责人</h3>
+            <div class="list" id="leader"></div>
+          </article>
+
+          <article class="card">
+            <h3>联系方式</h3>
+            <div class="list" id="contacts"></div>
+          </article>
+        </section>
+
+        <section class="section" id="founders-section">
+          <article class="card">
+            <h3>股东</h3>
+            <div class="list" id="founders"></div>
+          </article>
+        </section>
+
+        <section class="section grid-3">
+          <article class="card">
+            <h3>注册与登记</h3>
+            <div class="list" id="registration"></div>
+          </article>
+
+          <article class="card">
+            <h3>补充信息</h3>
+            <div class="list" id="extra"></div>
+          </article>
+
+          <article class="card">
+            <h3>税务与制度</h3>
+            <div class="list" id="taxes"></div>
+          </article>
+        </section>
+
+        <div class="source-note">
+          <span>数据由 <a href="https://checko.ru" target="_blank" rel="noopener">Checko</a>.</span>
+          <span>信息来自公开国家登记系统，仅供参考，不保证完全准确。</span>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    (() => {
+      const key = "gro-theme-v2";
+      const applyTheme = (theme) => {
+        document.body.classList.toggle("light-theme", theme === "light");
+        document.querySelectorAll("[data-theme-toggle]").forEach((button) => {
+          button.setAttribute("aria-label", theme === "light" ? "Включить ночную тему" : "Включить дневную тему");
+        });
+      };
+      const getInitialTheme = () => {
+        const requested = new URLSearchParams(window.location.search).get("theme");
+        if (requested === "light" || requested === "dark") {
+          try { localStorage.setItem(key, requested); } catch (error) {}
+          return requested;
+        }
+        try { return localStorage.getItem(key) || "dark"; } catch (error) { return "dark"; }
+      };
+      applyTheme(getInitialTheme());
+      window.addEventListener("DOMContentLoaded", () => {
+        if (window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost") {
+          document.querySelectorAll("[data-local-href]").forEach((link) => {
+            link.href = link.dataset.localHref;
+          });
+        }
+        document.querySelectorAll("[data-theme-toggle]").forEach((button) => {
+          button.addEventListener("click", () => {
+            const next = document.body.classList.contains("light-theme") ? "dark" : "light";
+            try { localStorage.setItem(key, next); } catch (error) {}
+            applyTheme(next);
+          });
+        });
+        const ribbon = document.querySelector(".gro-ribbon");
+        if (ribbon) {
+          const moveRibbon = () => {
+            const shiftY = Math.min(190, window.scrollY * 0.13);
+            const shiftX = Math.sin(window.scrollY / 170) * 30;
+            ribbon.style.setProperty("--ribbon-y", `${shiftY}px`);
+            ribbon.style.setProperty("--ribbon-x", `${shiftX}px`);
+          };
+          moveRibbon();
+          window.addEventListener("scroll", moveRibbon, { passive: true });
+        }
+      });
+    })();
+
+    const form = document.getElementById("search-form");
+    const innInput = document.getElementById("inn");
+    const submit = document.getElementById("submit");
+    const emptyState = document.getElementById("empty-state");
+    const results = document.getElementById("results");
+
+    const fields = {
+      summary: document.getElementById("summary"),
+      summaryTitle: document.getElementById("summary-title"),
+      summaryText: document.getElementById("summary-text"),
+      summaryScore: document.getElementById("summary-score"),
+      name: document.getElementById("company-name"),
+      fullName: document.getElementById("company-full-name"),
+      status: document.getElementById("company-status"),
+      innLabel: document.getElementById("inn-label"),
+      ogrnLabel: document.getElementById("ogrn-label"),
+      inn: document.getElementById("company-inn"),
+      ogrn: document.getElementById("company-ogrn"),
+      date: document.getElementById("company-date"),
+      region: document.getElementById("company-region"),
+      address: document.getElementById("address"),
+      addressRisk: document.getElementById("address-risk"),
+      okved: document.getElementById("okved"),
+      leader: document.getElementById("leader"),
+      contacts: document.getElementById("contacts"),
+      founders: document.getElementById("founders"),
+      peopleSection: document.getElementById("people-section"),
+      foundersSection: document.getElementById("founders-section"),
+      risks: document.getElementById("risks"),
+      registration: document.getElementById("registration"),
+      extra: document.getElementById("extra"),
+      taxes: document.getElementById("taxes")
+    };
+
+    innInput.addEventListener("input", () => {
+      innInput.value = innInput.value.replace(/\D/g, "").slice(0, 12);
+    });
+
+    form.addEventListener("submit", async event => {
+      event.preventDefault();
+      const inn = innInput.value.replace(/\D/g, "");
+
+      if (!/^(\d{10}|\d{12})$/.test(inn)) {
+        showState("Введите корректный ИНН", "Для организации укажите 10 цифр, для ИП - 12 цифр.");
+        return;
+      }
+
+      setLoading(true);
+
+      try {
+        const response = await fetch("/api/company", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ inn })
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+          showState("Не удалось выполнить проверку", data.error || "Попробуйте позже.");
+          return;
+        }
+
+        renderCompany(data);
+      } catch {
+        showState("Связь временно недоступна", "Проверьте подключение и повторите запрос.");
+      } finally {
+        setLoading(false);
+      }
+    });
+
+    function setLoading(isLoading) {
+      submit.disabled = isLoading;
+      submit.textContent = isLoading ? "Проверяем..." : "查询";
+    }
+
+    function showState(title, text) {
+      results.classList.remove("show");
+      emptyState.style.display = "grid";
+      emptyState.innerHTML = `<strong>${escapeHtml(title)}</strong><span>${escapeHtml(text)}</span>`;
+    }
+
+    function renderCompany(data) {
+      emptyState.style.display = "none";
+      results.classList.add("show");
+
+      renderSummary(data.summary);
+
+      const company = data.company || {};
+      const isEntrepreneur = data.entityType === "entrepreneur";
+      fields.innLabel.textContent = isEntrepreneur ? "ИНН" : "ИНН / КПП";
+      fields.ogrnLabel.textContent = isEntrepreneur ? "ОГРНИП / ОКПО" : "ОГРН / ОКПО";
+      fields.name.textContent = company.shortName || company.fullName || "Контрагент";
+      fields.fullName.textContent = [company.fullName, company.englishName].filter(Boolean).join(" / ");
+      fields.status.textContent = company.status || "Статус не указан";
+      fields.status.classList.toggle("bad", /ликвид|прекращ|недейств/i.test(company.status || ""));
+      fields.inn.textContent = [company.inn, company.kpp && `КПП ${company.kpp}`].filter(Boolean).join(" / ") || "Нет данных";
+      fields.ogrn.textContent = [company.ogrn, company.okpo && `ОКПО ${company.okpo}`].filter(Boolean).join(" / ") || "Нет данных";
+      fields.date.textContent = company.registrationDate || "Нет данных";
+      fields.region.textContent = company.region || "Нет данных";
+
+      const address = data.address || {};
+      fields.address.textContent = address.text || (isEntrepreneur ? "Для ИП адрес может не раскрываться в открытом отчете." : "Нет данных");
+      const addressNotes = [];
+      if (address.text || address.unreliable || address.massCount) {
+        addressNotes.push(address.unreliable ? `Недостоверность: ${address.unreliableReason || "есть"}` : "Признака недостоверности адреса нет.");
+      }
+      if (address.massCount) addressNotes.push(`Массовый адрес: ${address.massCount} связанных организаций.`);
+      fields.addressRisk.textContent = addressNotes.join(" ");
+
+      const okved = data.okved || {};
+      fields.okved.textContent = [okved.code, okved.name].filter(Boolean).join(" - ") || "Нет данных";
+
+      fields.peopleSection.style.display = isEntrepreneur ? "none" : "grid";
+      fields.foundersSection.style.display = isEntrepreneur ? "none" : "block";
+
+      if (!isEntrepreneur) renderLeader(data.leader);
+      renderContacts(data.contacts);
+      if (!isEntrepreneur) renderFounders(data.founders);
+      renderRisks(data.risks || []);
+      renderRegistration(data.registration || {}, company);
+      renderExtra(data.assets || {}, company);
+      renderTaxes(data.taxes || {});
+
+      results.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function renderSummary(summary = {}) {
+      fields.summary.classList.remove("warn", "bad");
+      if (summary.level === "warn") fields.summary.classList.add("warn");
+      if (summary.level === "bad") fields.summary.classList.add("bad");
+      fields.summaryTitle.textContent = summary.title || "Отчет готов";
+      fields.summaryText.textContent = summary.text || "";
+      fields.summaryScore.innerHTML = `${summary.bad || 0}/${summary.warn || 0}<span>риски / внимание</span>`;
+    }
+
+    function renderLeader(leader) {
+      if (!leader) {
+        fields.leader.innerHTML = `<div class="muted">Нет данных.</div>`;
+        return;
+      }
+
+      const rows = [
+        row("ФИО", leader.name || "Нет данных"),
+        row("Должность", leader.position || "Нет данных")
+      ];
+      if (leader.inn) rows.push(row("ИНН", leader.inn));
+      if (leader.relatedAsLeader || leader.relatedAsFounder) rows.push(row("Связи", `руководитель: ${leader.relatedAsLeader || 0}, учредитель: ${leader.relatedAsFounder || 0}`));
+      if (leader.unreliable) rows.push(row("Недостоверность", leader.unreliableReason || "есть"));
+      if (leader.massLeader) rows.push(row("Признак", "массовый руководитель"));
+      if (leader.disqualified) rows.push(row("Признак", "дисквалифицированное лицо"));
+      fields.leader.innerHTML = rows.join("");
+    }
+
+    function renderContacts(contacts = {}) {
+      const rows = [];
+      if (contacts.phones?.length) rows.push(row("Телефон", contacts.phones.join(", ")));
+      if (contacts.emails?.length) rows.push(row("Email", contacts.emails.join(", ")));
+      if (contacts.website) rows.push(row("Сайт", contacts.website));
+      fields.contacts.innerHTML = rows.join("") || `<div class="muted">联系方式 не найдены.</div>`;
+    }
+
+    function renderFounders(founders = []) {
+      fields.founders.innerHTML = founders.length
+        ? founders.map(item => {
+            const notes = [];
+            notes.push(item.share);
+            if (item.inn) notes.push(`ИНН ${item.inn}`);
+            if (item.unreliable) notes.push(`недостоверность: ${item.unreliableReason || "есть"}`);
+            if (item.massFounder) notes.push("массовый учредитель");
+            if (item.relatedAsLeader || item.relatedAsFounder) notes.push(`связи: руководитель ${item.relatedAsLeader || 0}, учредитель ${item.relatedAsFounder || 0}`);
+            return `
+              <div class="row">
+                <div class="label">${escapeHtml(item.type)}</div>
+                <div class="text">${escapeHtml(item.name)}<br><span class="muted">${escapeHtml(notes.filter(Boolean).join(" / "))}</span></div>
+              </div>
+            `;
+          }).join("")
+        : `<div class="muted">股东 не найдены в ответе сервиса.</div>`;
+    }
+
+    function renderRisks(risks) {
+      fields.risks.innerHTML = risks.map(risk => `
+        <div class="risk ${risk.level === "bad" ? "bad" : risk.level === "warn" ? "warn" : ""}">
+          <span class="risk-dot"></span>
+          <span><strong>${escapeHtml(risk.title)}</strong><br><span class="muted">${escapeHtml(risk.text || "")}</span></span>
+        </div>
+      `).join("");
+    }
+
+    function renderRegistration(registration, company) {
+      const rows = [];
+      if (registration.registrar) rows.push(row("Регистрация", registration.registrar));
+      if (registration.currentTaxOffice) rows.push(row("Текущая ФНС", registration.currentTaxOffice));
+      if (registration.pfr) rows.push(row("ПФР", registration.pfr));
+      if (registration.fss) rows.push(row("ФСС", registration.fss));
+      if (company.extractDate) rows.push(row("Выписка", company.extractDate));
+      fields.registration.innerHTML = rows.join("") || `<div class="muted">Нет дополнительных данных.</div>`;
+    }
+
+    function renderExtra(assets, company) {
+      const rows = [];
+      if (company.opf) rows.push(row("Форма", company.opf));
+      if (company.capital) rows.push(row("Капитал", company.capital));
+      if (company.msp) rows.push(row("МСП", company.msp));
+      if (company.staffCount !== null && company.staffCount !== undefined) rows.push(row("Среднесписочная численность", String(company.staffCount)));
+      rows.push(row("Лицензии", String(assets.licenses || 0)));
+      rows.push(row("Товарные знаки", String(assets.trademarks || 0)));
+      rows.push(row("Филиалы / представительства", `${assets.branches || 0} / ${assets.representativeOffices || 0}`));
+      fields.extra.innerHTML = rows.join("");
+    }
+
+    function renderTaxes(taxes) {
+      const rows = [];
+      if (taxes.regimes?.length) rows.push(row("Спецрежимы", taxes.regimes.join(", ")));
+      if (taxes.arrears !== null && taxes.arrears !== undefined) rows.push(row("Недоимка", `${taxes.arrears} ₽`));
+      if (taxes.penalties !== null && taxes.penalties !== undefined) rows.push(row("Штрафы", `${taxes.penalties} ₽`));
+      fields.taxes.innerHTML = rows.join("") || `<div class="muted">Существенные налоговые сведения не найдены.</div>`;
+    }
+
+    function row(label, value) {
+      return `<div class="row"><div class="label">${escapeHtml(label)}</div><div class="text">${escapeHtml(value)}</div></div>`;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+  </script>
+</body>
+</html>

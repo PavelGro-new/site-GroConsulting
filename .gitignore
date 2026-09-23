@@ -1,0 +1,18 @@
+# Secrets and local runtime files
+.env
+.env.*
+!.env.example
+
+# Dependencies and caches
+node_modules/
+__pycache__/
+.pytest_cache/
+.relay/
+
+# Local diagnostics and captures
+*.pcap
+*.log
+npm-debug.log*
+
+# Local deploy archives
+*.tar.gz
