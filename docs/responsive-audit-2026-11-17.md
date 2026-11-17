@@ -8,7 +8,7 @@ This branch starts from the deployed source baseline `6a6407ea5feb32f25ded970f24
 - Keep the partner marks centred and proportional, with a single column on narrow screens so the wide official Taxcom mark remains readable. Other partner graphics are unchanged.
 - Expose the existing main navigation links on mobile and keep them clear of the fixed header; prevent tariff tabs from overflowing the narrowest layout.
 - Restore missing GRO image references in both languages using the existing deployed wordmark; preserve its proportions and light-theme contrast in header/footer.
-- Keep the tax tool's navigation controls within narrow viewports and make closed drawers non-focusable.
+- Keep the tax tool's navigation controls within narrow viewports and make closed drawers non-focusable. Correct light-theme backgrounds/contrast in open calculation panels and make the wide comparison table keyboard-scrollable.
 - Preserve the currency date/status after loading and explicitly label demonstration values when the external source is unavailable.
 - Move the already deployed number-parser/currency fallback/lead-endpoint response patches into source so these behaviours are reproducible from Git. These changes do not alter the deployed calculation logic.
 

@@ -171,6 +171,12 @@
         @media (max-width: 720px) { .nav-phone { display: none; } .logo { font-size: 20px; } .site-nav { height: 72px; } body { padding-top: 72px; } .service-mode-button span { display: none; } }
 
 
+        /* Match open overlays to the selected light theme. */
+        body.light-theme .drawer-panel, body.light-theme .modal-content { background: #f8fbff; border-color: rgba(100,130,190,.22); }
+        body.light-theme .drawer-panel .bg-black\/40 { background: #edf2fa; }
+        body.light-theme .drawer-panel .text-gray-500 { color: #59657a !important; }
+        .drawer-panel > div:first-child h3 { min-width: 0; font-size: clamp(15px, 4.5vw, 18px); }
+        .drawer-panel > div:first-child button { min-width: 44px; min-height: 44px; flex-shrink: 0; }
         /* Off-canvas drawers must not stay focusable while closed. */
         .drawer-panel { visibility: hidden; pointer-events: none; }
         .drawer-panel.active { visibility: visible; pointer-events: auto; }
@@ -405,7 +411,7 @@
             <button onclick="closeDrawer('tableDrawer')" class="p-2 text-gray-400 hover:text-white rounded-md bg-white/5 hover:bg-white/10 transition-colors">&times;</button>
         </div>
         <div class="p-5 overflow-y-auto custom-scroll flex-grow">
-            <div class="overflow-x-auto">
+            <div class="overflow-x-auto" tabindex="0" role="region" aria-label="Сравнение режимов, горизонтальная прокрутка">
                 <table class="w-full text-left border-collapse min-w-[550px]">
                     <thead>
                         <tr class="border-b border-white/5 text-[10px] uppercase text-gray-500 bg-black/40">
