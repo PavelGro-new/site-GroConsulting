@@ -1286,7 +1286,7 @@
 
       for (let attempt = 0; attempt < 14; attempt += 1) {
         const candidate = toInputDate(cursor);
-        const response = await fetch(toArchiveUrl(candidate), { cache: "no-store" });
+        let response; try { response = await fetch(toArchiveUrl(candidate), { cache: "no-store" }); } catch (_) { cursor.setDate(cursor.getDate() - 1); continue; }
 
         if (response.ok) {
           const data = await response.json();
@@ -1305,7 +1305,7 @@
 
     function setLoading(isLoading) {
       els.app.classList.toggle("loading", isLoading);
-      els.status.textContent = isLoading ? "正在更新汇率..." : "";
+      if (isLoading) els.status.textContent = "正在更新汇率...";
     }
 
     function showMessage(text) {
@@ -1447,8 +1447,8 @@
         renderQuickRates();
         renderConverterOptions();
         calculate();
-        els.status.textContent = `汇率日期：${humanDate(state.actualDate)}`;
-        showMessage("当前显示最近可用汇率。请稍后刷新页面。");
+        els.status.textContent = "演示汇率：数据源不可用";
+        showMessage("数据源不可用：显示的是 2026-08-01 的演示汇率，并非当前汇率。");
       } finally {
         setLoading(false);
       }

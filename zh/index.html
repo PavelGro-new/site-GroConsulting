@@ -642,6 +642,26 @@
 
         body.light-theme .theme-toggle .sun-icon { display: block; }
         body.light-theme .theme-toggle .moon-icon { display: none; }
+
+        /* Keep the existing navigation and partner marks usable on narrow screens. */
+        html { scroll-padding-top: 96px; }
+        img[src="/assets/logo.svg"] { width: 100%; height: auto; max-height: 32px; object-fit: contain; object-position: left center; }
+        body.light-theme img[src="/assets/logo.svg"] { filter: none; }
+        .edo-logo-taxcom { display: block; width: min(194px, 100%); max-width: 194px; height: auto; max-height: none; object-fit: contain; object-position: center; margin-inline: auto; }
+        @media (max-width: 767px) {
+            html { scroll-padding-top: 128px; }
+            header .site-header-row { height: auto; min-height: 80px; flex-wrap: wrap; padding-block: 10px; row-gap: 6px; }
+            header .site-brand { width: clamp(140px, 48vw, 192px); }
+            header .site-nav { display: flex; order: 3; width: 100%; justify-content: space-between; gap: 4px; }
+            .site-nav a { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 4px; font-size: clamp(12px, 3.4vw, 13px); white-space: nowrap; }
+            .site-nav a + a { margin-left: 0 !important; }
+            .tariff-tabs { display: flex; flex-wrap: wrap; width: 100%; gap: 4px; }
+            .tariff-tabs .tab-btn { flex: 1 1 100px; min-height: 44px; padding-inline: 12px; }
+        }
+        @media (max-width: 480px) {
+            .edo-logo-grid.grid { grid-template-columns: minmax(0, 1fr); }
+            .edo-logo-taxcom { max-width: 194px; max-height: none; }
+        }
     </style>
 </head>
 <body class="antialiased selection:bg-gro-accent selection:text-white">
@@ -686,13 +706,13 @@
 
     <header class="fixed w-full top-0 z-50 glass-panel border-b-0 border-white/5 transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-20">
+            <div class="site-header-row flex justify-between items-center h-20">
                 
                 <!-- ЛОГОТ个体工商户 -->
-                <div class="flex-shrink-0 flex items-center relative h-10 w-48">
+                <div class="site-brand flex-shrink-0 flex items-center relative h-10 w-48">
                     <a href="/" class="absolute inset-0 flex items-center">
                         <!-- ТЗ: Путь assets/logo.png -->
-                        <img src="/assets/logo.png" alt="GRO Consulting" 
+                        <img src="/assets/logo.svg" alt="GRO Consulting"
                              class="h-8 w-auto brightness-0 invert transition-all duration-300"
                              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
                         
@@ -704,7 +724,7 @@
                 </div>
                 
                 <!-- НАВИГАЦИЯ -->
-                <nav class="hidden md:flex space-x-8">
+                <nav class="site-nav hidden md:flex space-x-8" aria-label="主导航">
                     <a href="#services" class="text-sm font-medium text-gray-400 hover:text-white transition-colors">服务</a>
                     <a href="#tariffs" class="text-sm font-medium text-gray-400 hover:text-white transition-colors">价格</a>
                     <a href="#tools" class="text-sm font-medium text-gray-400 hover:text-white transition-colors">工具</a>
@@ -1059,7 +1079,7 @@
                 </div>
                 
                 <!-- Табы (Glassmorphic) -->
-                <div class="inline-flex p-1 glass-panel rounded-xl">
+                <div class="tariff-tabs inline-flex p-1 glass-panel rounded-xl">
                     <button onclick="switchTab('ip')" id="tab-ip" class="tab-btn active relative px-8 py-3 text-sm font-semibold rounded-lg text-white bg-white/10 shadow border border-white/5 transition-all">个体工商户</button>
                     <button onclick="switchTab('ooo-usn')" id="tab-ooo-usn" class="tab-btn relative px-8 py-3 text-sm font-medium rounded-lg text-gray-400 hover:text-white transition-all">简化税制公司</button>
                     <button onclick="switchTab('ooo-osno')" id="tab-ooo-osno" class="tab-btn relative px-8 py-3 text-sm font-medium rounded-lg text-gray-400 hover:text-white transition-all">一般税制公司</button>
@@ -1149,7 +1169,7 @@
                             <span class="text-xs text-gray-500 uppercase tracking-wider text-center">官方合作伙伴</span>
                         </div>
                         <div class="edo-logo-card glass-panel p-5 rounded-xl flex flex-col items-center justify-center gap-3 border-white/5 hover:border-white/20 transition-all">
-                            <span class="edo-logo-frame"><img src="/assets/edo/taxcom.svg" alt="Такском" class="edo-logo edo-logo-taxcom"></span>
+                            <span class="edo-logo-frame"><img src="/assets/edo/taxcom.svg?v=official-20261117" width="194" height="24" alt="Такском" class="edo-logo edo-logo-taxcom"></span>
                             <span class="text-xs text-gray-500 uppercase tracking-wider text-center">官方合作伙伴</span>
                         </div>
                     </div>
@@ -1398,7 +1418,7 @@
                 
                 <div class="col-span-1 md:col-span-2">
                     <div class="flex items-center relative h-8 w-40 mb-6">
-                        <img src="/assets/logo.png" alt="GRO Consulting" class="h-6 w-auto brightness-0 invert" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
+                        <img src="/assets/logo.svg" alt="GRO Consulting" class="h-6 w-auto brightness-0 invert" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
                         <div class="fallback-element text-lg font-bold tracking-tight text-white">GRO<span class="text-gro-accent">CONSULTING</span></div>
                     </div>
                     <p class="text-gray-500 text-sm max-w-sm leading-relaxed">
@@ -1626,7 +1646,7 @@
 
         function getLeadApiUrl() {
             const host = window.location.hostname;
-            if (host === '127.0.0.1' || host === 'localhost') return 'http://127.0.0.1:3100/api/lead';
+            if (host === '127.0.0.1' || host === 'localhost') return '/api/lead';
             return '/api/lead';
         }
 

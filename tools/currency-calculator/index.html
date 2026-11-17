@@ -1286,7 +1286,7 @@
 
       for (let attempt = 0; attempt < 14; attempt += 1) {
         const candidate = toInputDate(cursor);
-        const response = await fetch(toArchiveUrl(candidate), { cache: "no-store" });
+        let response; try { response = await fetch(toArchiveUrl(candidate), { cache: "no-store" }); } catch (_) { cursor.setDate(cursor.getDate() - 1); continue; }
 
         if (response.ok) {
           const data = await response.json();
@@ -1305,7 +1305,7 @@
 
     function setLoading(isLoading) {
       els.app.classList.toggle("loading", isLoading);
-      els.status.textContent = isLoading ? "Обновляем курс..." : "";
+      if (isLoading) els.status.textContent = "Обновляем курс...";
     }
 
     function showMessage(text) {
@@ -1447,8 +1447,8 @@
         renderQuickRates();
         renderConverterOptions();
         calculate();
-        els.status.textContent = `Курс на ${humanDate(state.actualDate)}`;
-        showMessage("Сейчас показан последний доступный курс. Попробуйте обновить страницу позже.");
+        els.status.textContent = "Демо: источник недоступен";
+        showMessage("Источник недоступен: показаны демонстрационные курсы на 01.08.2026, не актуальные курсы.");
       } finally {
         setLoading(false);
       }

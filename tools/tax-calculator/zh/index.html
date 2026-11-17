@@ -170,6 +170,17 @@
         body.light-theme .lead-field::placeholder { color: rgba(51,65,85,.56); }
         @media (max-width: 720px) { .nav-phone { display: none; } .logo { font-size: 20px; } .site-nav { height: 72px; } body { padding-top: 72px; } .service-mode-button span { display: none; } }
 
+
+        /* Off-canvas drawers must not stay focusable while closed. */
+        .drawer-panel { visibility: hidden; pointer-events: none; }
+        .drawer-panel.active { visibility: visible; pointer-events: auto; }
+        @media (max-width: 480px) {
+            .nav-inner { padding-inline: 12px; gap: 8px; }
+            .logo { font-size: clamp(14px, 4.2vw, 20px); white-space: nowrap; }
+            .nav-actions { gap: 8px; flex-shrink: 0; }
+            .lang { padding-inline: 10px; min-height: 44px; font-size: 12px; }
+            .theme-toggle { width: 44px; min-height: 44px; flex-shrink: 0; }
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col font-sans text-gray-200">
@@ -540,7 +551,7 @@
 
         const formatMoney = (val) => new Intl.NumberFormat('zh-CN', { style: 'decimal', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(val);
         const formatPercent = (val) => (val * 100).toFixed(1) + '%';
-        const parseMoney = (str) => parseFloat(str.replace(/\s/g, '')) || 0;
+        const parseMoney = (str) => parseFloat(str.replace(/[\s,]/g, '')) || 0;
 
         function showToast(message) {
             const toast = document.getElementById('toast');

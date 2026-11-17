@@ -1,0 +1,10 @@
+{
+  "source": "https://taxcom.ru/",
+  "retrieved": "2026-11-17",
+  "selector": "span[aria-label=\"Такском\"] > svg",
+  "originalSha256": "c654f91349cf27ac9faae959f2fddf19fae0ea06aede1d73db4eaa8061cbe43d",
+  "pathDataSha256": "dd61dcf580ee65e110c019f962bd5a15f8314895f72d25c1013edb7e39003037",
+  "pathCount": 7,
+  "viewBox": "0 0 194 24",
+  "inheritedOfficialColor": "rgb(41, 98, 255)"
+}
