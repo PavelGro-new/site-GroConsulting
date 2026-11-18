@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
@@ -974,6 +974,38 @@
         align-items: flex-start;
       }
     }
+
+    /* Owner mobile currency layout; all rate/calculation code is unchanged. */
+    .trust-line { width: fit-content; padding: 8px 10px; border-radius: 10px; background: #153775; color: #fff; }
+    body.light-theme .trust-line { background: #e3edff; color: #153775; }
+    .currency-panel { min-width: 0; }
+    .currency-panel > summary { display: none; }
+    @media (max-width: 768px) {
+      .wrap { padding-top: 18px; }
+      .layout { gap: 14px; }
+      .intro { padding: 0; }
+      h1 { font-size: clamp(24px, 7vw, 32px); line-height: 1.12; }
+      .lead { font-size: 14px; line-height: 1.45; margin-top: 10px; }
+      .trust-line { margin-top: 10px; font-size: 12px; }
+      .quick-row { display: none; }
+      .tool-head { padding: 14px 16px; gap: 8px; }
+      .tool-head h2 { font-size: 18px; }
+      .tool-head .subtle, .status { font-size: 12px; }
+      .tool-body { display: flex; flex-direction: column; gap: 16px; padding: 14px; }
+      .converter { order: 0; padding: 14px; }
+      .control-line { order: 1; display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 0; }
+      .rates { order: 2; margin-bottom: 0; }
+      .message { order: 3; margin: 0; }
+      .source-note { order: 4; margin-top: 0; }
+      .converter-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+      .converter-grid > div:first-child, .converter-grid > .swap { grid-column: 1 / -1; }
+      .converter-grid input, .converter-grid select { font-size: 16px; min-height: 48px; }
+      .converter-grid .swap { width: 100%; min-height: 44px; }
+      .converter-title { margin-bottom: 10px; }
+      .result { padding: 12px; }
+      .currency-panel > summary { display: list-item; padding: 12px; min-height: 44px; border: 1px solid var(--border-strong); border-radius: 12px; background: var(--field); color: var(--text); font-weight: 800; cursor: pointer; }
+      .currency-panel-content { padding-top: 12px; }
+    }
   </style>
 </head>
 <body>
@@ -1044,10 +1076,14 @@
                 <label for="date-input">Дата расчета <span class="help" tabindex="0" data-tip="Дата, на которую нужно взять официальный курс валют.">?</span></label>
                 <input id="date-input" type="date">
               </div>
-              <div>
+              <details class="currency-panel" id="currency-panel" open>
+                <summary>Выбрать валюты на панели</summary>
+                <div class="currency-panel-content">
                 <label>Валюты на панели <span class="help" tabindex="0" data-tip="Отметьте валюты, которые нужно показывать в быстрых курсах. В конвертере рубль доступен всегда.">?</span></label>
                 <div class="chips" id="currency-chips"></div>
-              </div>
+
+                </div>
+              </details>
             </div>
 
             <div class="rates" id="rates-grid"></div>
@@ -1286,7 +1322,7 @@
 
       for (let attempt = 0; attempt < 14; attempt += 1) {
         const candidate = toInputDate(cursor);
-        const response = await fetch(toArchiveUrl(candidate), { cache: "no-store" });
+        let response; try { response = await fetch(toArchiveUrl(candidate), { cache: "no-store" }); } catch (_) { cursor.setDate(cursor.getDate() - 1); continue; }
 
         if (response.ok) {
           const data = await response.json();
@@ -1305,7 +1341,7 @@
 
     function setLoading(isLoading) {
       els.app.classList.toggle("loading", isLoading);
-      els.status.textContent = isLoading ? "Обновляем курс..." : "";
+      if (isLoading) els.status.textContent = "Обновляем курс...";
     }
 
     function showMessage(text) {
@@ -1447,8 +1483,8 @@
         renderQuickRates();
         renderConverterOptions();
         calculate();
-        els.status.textContent = `Курс на ${humanDate(state.actualDate)}`;
-        showMessage("Сейчас показан последний доступный курс. Попробуйте обновить страницу позже.");
+        els.status.textContent = "Демо: источник недоступен";
+        showMessage("Источник недоступен: показаны демонстрационные курсы на 01.08.2026, не актуальные курсы.");
       } finally {
         setLoading(false);
       }
@@ -1473,6 +1509,18 @@
     }
 
     init();
+  </script>
+
+  <script>
+    // OWNER_CURRENCY_DISCLOSURE_START
+    (() => {
+      const panel = document.getElementById('currency-panel');
+      const mobile = window.matchMedia('(max-width: 768px)');
+      const syncPanel = () => { panel.open = !mobile.matches; };
+      syncPanel();
+      mobile.addEventListener('change', syncPanel);
+    })();
+    // OWNER_CURRENCY_DISCLOSURE_END
   </script>
 </body>
 </html>
