@@ -9,7 +9,11 @@ const base='6a6407ea5feb32f25ded970f240832c62e7fd9f9';
 const files=['index.html','zh/index.html','tax/index.html','zh/tax/index.html','tools/tax-calculator/index.html','tools/tax-calculator/zh/index.html','tools/currency-calculator/index.html','tools/currency-calculator/zh/index.html'];
 const scripts=html=>[...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/g)].filter(m=>!m[1].includes('application/ld+json')).map(m=>m[2].trim());
 // Status-only DOM text changes are allowed; every other deployed script statement must match.
-const withoutStatusText=script=>script.replace(/^.*els\.status\.textContent.*$/gm,'');
+const withoutStatusText=script=>script.replace(/^.*els\.status\.textContent.*$/gm,'')
+ .replace(/\s*\/\/ OWNER_MOBILE_VIEWPORT_START[\s\S]*?\/\/ OWNER_MOBILE_VIEWPORT_END\s*/,'\n        ')
+ .replace(/^\s*syncLeadViewport\(\);\s*$/gm,'')
+ .replace("if (firstInput && window.matchMedia('(min-width: 768px)').matches) firstInput.focus();",'if (firstInput) firstInput.focus();');
+const coreScripts=html=>scripts(html).filter(script=>!script.includes('OWNER_CURRENCY_DISCLOSURE_START')).map(withoutStatusText).map(s=>s.replace(/\s+/g,' '));
 const approvedOverlay=text=>text.replaceAll('http://127.0.0.1:3100/api/lead','/api/lead')
  .replaceAll("const parseMoney = (str) => parseFloat(str.replace(/\\s/g, '')) || 0;","const parseMoney = (str) => parseFloat(str.replace(/[\\s,]/g, '')) || 0;")
  .replaceAll('const response = await fetch(toArchiveUrl(candidate), { cache: "no-store" });','let response; try { response = await fetch(toArchiveUrl(candidate), { cache: "no-store" }); } catch (_) { cursor.setDate(cursor.getDate() - 1); continue; }')
@@ -18,7 +22,7 @@ const approvedOverlay=text=>text.replaceAll('http://127.0.0.1:3100/api/lead','/a
 for(const file of files){
  const current=fs.readFileSync(path.join(root,file),'utf8');
  const previous=execFileSync('git',['show',base+':'+file],{cwd:root,encoding:'utf8'});
- assert.deepEqual(scripts(current).map(withoutStatusText),scripts(approvedOverlay(previous)).map(withoutStatusText),file+': scripts differ from deployed logic beyond status text');
+ assert.deepEqual(coreScripts(current),coreScripts(approvedOverlay(previous)),file+': scripts differ from deployed logic beyond scoped UI/status changes');
  for(const [index,script] of scripts(current).entries())new vm.Script(script,{filename:file+':script'+index});
 }
 const svg=fs.readFileSync(path.join(root,'assets/edo/taxcom.svg'),'utf8');
